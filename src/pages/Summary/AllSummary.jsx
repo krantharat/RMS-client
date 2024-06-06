@@ -1,4 +1,4 @@
-import Header from '/2/projectWebpro/RMS-client/src/components/header'
+import Header from "../../components/header"
 import React from "react"
 
 function Summary() {
