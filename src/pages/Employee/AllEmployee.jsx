@@ -1,13 +1,15 @@
 import React from "react"
+import Header from "../../components/header"
 
-function Header() {
+function Employee() {
   return (
     <>
     <div>
-        <h1>This is All Employee</h1>
+      <Header title="Employee" />
+      <h1>This is All Employee</h1>
     </div>
     </>
   )
 }
 
-export default Header
+export default Employee
