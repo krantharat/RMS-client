@@ -1,6 +1,6 @@
 import React from "react"
 
-function Header() {
+function Schedule() {
   return (
     <>
     <div>
@@ -10,4 +10,4 @@ function Header() {
   )
 }
 
-export default Header
+export default Schedule
