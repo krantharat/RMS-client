@@ -27,6 +27,11 @@ function Employee() {
             <EmployeeCard name="Mike Johnson" position="Designer" email="mike@example.com" phoneNumber="456-789-1234" />
             <EmployeeCard name="Emily Davis" position="Marketing" email="emily@example.com" phoneNumber="321-654-9870" />
             <EmployeeCard name="Sarah Brown" position="HR" email="sarah@example.com" phoneNumber="654-321-0987" />
+            <EmployeeCard name="John Doe" position="Manager" email="john@example.com" phoneNumber="123-456-7890" />
+            <EmployeeCard name="Jane Smith" position="Developer" email="jane@example.com" phoneNumber="987-654-3210" />
+            <EmployeeCard name="Mike Johnson" position="Designer" email="mike@example.com" phoneNumber="456-789-1234" />
+            <EmployeeCard name="Emily Davis" position="Marketing" email="emily@example.com" phoneNumber="321-654-9870" />
+            <EmployeeCard name="Sarah Brown" position="HR" email="sarah@example.com" phoneNumber="654-321-0987" />
           </div>
         </div>
       </div>
