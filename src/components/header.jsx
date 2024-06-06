@@ -4,7 +4,7 @@ import propTypes from 'prop-types'
 function Header({ title }) {
   return (
     <>
-    <div className="w-full h-20 border-b-4 border-zinc-400 m-5 content-center">
+    <div className="w-screen h-20 border-b-4 border-zinc-400 m-5 content-center">
         <h1 className="text-5xl text-black text-left font-bold ">{title}</h1>
     </div>
     </>
