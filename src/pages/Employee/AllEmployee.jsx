@@ -3,9 +3,11 @@ import Header from "../../components/header";
 import { MdEmail } from "react-icons/md";
 import { FaPhoneVolume } from "react-icons/fa6";
 import ViewEmployee from "./ViewEmployee";
+import CreateEmployee from "./CreateEmployee";
 
 function AllEmployee() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [createEmployee, setCreateEmployee] = useState(false);
 
   const employees = [
     {
@@ -28,7 +30,17 @@ function AllEmployee() {
     setSelectedEmployee(employee);
   };
 
+  const handleClickCreate = () => {
+    setCreateEmployee(true);
+  };
+
   const closeModal = () => {
+    setSelectedEmployee(null);
+    setCreateEmployee(false);
+  };
+
+  const handleDeleteEmployee = () => {
+    console.log("Employee deleted:", selectedEmployee);
     setSelectedEmployee(null);
   };
 
@@ -38,19 +50,23 @@ function AllEmployee() {
         <Header title="Employee" />
 
         <div>
-          <form className="flex justify-end mr-5">
+          <form className="flex justify-end mr-5" onSubmit={(e) => e.preventDefault()}>
             <input
               type="text"
               placeholder="Search employee by ID"
               className="w-4/12 border border-gray-300 rounded-3xl p-2 pl-4 shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
             />
             <button
-              type="submit"
+              type="button"
               className="w-20 bg-yellow-500 text-white font-medium capitalize border-0 rounded-3xl ml-5 p-2 hover:bg-yellow-600 transition duration-300"
+              onClick={handleClickCreate}
             >
               Create
             </button>
           </form>
+          {createEmployee && (
+            <CreateEmployee onClose={closeModal} />
+          )}
         </div>
 
         <div className="flex flex-col p-5">
@@ -62,7 +78,11 @@ function AllEmployee() {
         </div>
 
         {selectedEmployee && (
-          <ViewEmployee selectedEmployee={selectedEmployee} onClose={closeModal} />
+          <ViewEmployee
+            selectedEmployee={selectedEmployee}
+            onClose={closeModal}
+            onConfirmDelete={handleDeleteEmployee}
+          />
         )}
       </div>
     </>

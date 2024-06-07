@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { FaEdit } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
+import DeleteEmployee from './DeleteEmployee';
 
-const ViewEmployee = ({ selectedEmployee, onClose }) => {
+const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
   const [isEditable, setIsEditable] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
   const [employee, setEmployee] = useState({ ...selectedEmployee });
-
-  const handleEditClick = () => {
-    setIsEditable(true);
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,9 +16,16 @@ const ViewEmployee = ({ selectedEmployee, onClose }) => {
     }));
   };
 
+  const handleEditClick = () => {
+    setIsEditable(true);
+  };
+
+  const handleDeleteClick = () => {
+    setIsDelete(true);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here
     setIsEditable(false);
     onClose();
   };
@@ -29,6 +34,10 @@ const ViewEmployee = ({ selectedEmployee, onClose }) => {
     setEmployee({ ...selectedEmployee });
     setIsEditable(false);
     onClose();
+  };
+
+  const closeDeleteModal = () => {
+    setIsDelete(false);
   };
 
   return (
@@ -191,7 +200,6 @@ const ViewEmployee = ({ selectedEmployee, onClose }) => {
                 onChange={handleChange}
                 readOnly={!isEditable}
               />
-              
             </div>
             {isEditable && (
               <div className="flex flex-col">
@@ -199,20 +207,24 @@ const ViewEmployee = ({ selectedEmployee, onClose }) => {
                   <button
                     type="button"
                     className="w-28 text-red-500 text-sm font-medium capitalize border-0 rounded-3xl p-1 hover:text-red-700 hover:underline transition duration-300"
-                  >Delete profile
+                    onClick={handleDeleteClick}
+                  >
+                    Delete profile
                   </button>
                 </div>
                 <div className='flex justify-center mt-2'>
                   <button
                     type="submit"
                     className="w-20 bg-green-500 text-white font-medium capitalize border-0 rounded-3xl ml-5 p-2 hover:bg-green-700 transition duration-300"
-                  >Save
+                  >
+                    Save
                   </button>
                   <button
                     type="button"
                     className="w-20 bg-red-500 text-white font-medium capitalize border-0 rounded-3xl ml-5 p-2 hover:bg-red-700 transition duration-300"
                     onClick={handleCancel}
-                  > Cancel
+                  >
+                    Cancel
                   </button>
                 </div>
               </div>
@@ -226,6 +238,9 @@ const ViewEmployee = ({ selectedEmployee, onClose }) => {
           <IoMdCloseCircle className="size-7 text-red-500 cursor-pointer hover:text-red-700 transition duration-300 mr-1.5 mt-1" />
         </button>
       </div>
+      {isDelete && (
+        <DeleteEmployee selectedEmployee={selectedEmployee} onClose={closeDeleteModal} onConfirm={onConfirmDelete} />
+      )}
     </div>
   );
 };

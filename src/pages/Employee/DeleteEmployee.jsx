@@ -1,32 +1,11 @@
 import React, { useState } from 'react';
 import { IoMdCloseCircle } from "react-icons/io";
 
-const CreateEmployee = ({ onClose }) => {
-  const [formData, setFormData] = useState({
-    employeeID: '',
-    position: '',
-    firstName: '',
-    lastName: '',
-    nickName: '',
-    dateOfBirth: '',
-    gender: 'Male',
-    identificationNumber: '',
-    location: '',
-    email: '',
-    phone: '',
-    startDate: ''
-  });
+const DeleteEmployee = ({ selectedEmployee, onClose, onConfirm }) => {
+  const [employee] = useState(selectedEmployee);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleConfirm = () => {
+    onConfirm();
     onClose();
   };
 
@@ -35,13 +14,13 @@ const CreateEmployee = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="relative bg-white p-5 border-gray-200 rounded-2xl shadow-sm w-11/12 md:w-6/12 lg:w-6/12 h-auto">
         <div className="flex justify-center items-center">
-          <h3 className="text-2xl font-bold">Create New Profile</h3>
+          <h3 className="text-2xl font-bold">Are you sure you want to delete this profile?</h3>
         </div>
         <div className="p-5 bg-white h-96 overflow-y-auto border border-gray-300 mt-3">
-          <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit}>
+          <form className="grid grid-cols-1 gap-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Employee Number</label>
@@ -49,8 +28,8 @@ const CreateEmployee = ({ onClose }) => {
                   type="text"
                   name="employeeID"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                  value={formData.employeeID}
-                  onChange={handleChange}
+                  value={employee.employeeID}
+                  readOnly
                 />
               </div>
               <div>
@@ -59,8 +38,8 @@ const CreateEmployee = ({ onClose }) => {
                   type="text"
                   name="position"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                  value={formData.position}
-                  onChange={handleChange}
+                  value={employee.position}
+                  readOnly
                 />
               </div>
             </div>
@@ -72,8 +51,8 @@ const CreateEmployee = ({ onClose }) => {
                   type="text"
                   name="firstName"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                  value={formData.firstName}
-                  onChange={handleChange}
+                  value={employee.firstName}
+                  readOnly
                 />
               </div>
               <div>
@@ -82,8 +61,8 @@ const CreateEmployee = ({ onClose }) => {
                   type="text"
                   name="lastName"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                  value={formData.lastName}
-                  onChange={handleChange}
+                  value={employee.lastName}
+                  readOnly
                 />
               </div>
             </div>
@@ -95,8 +74,8 @@ const CreateEmployee = ({ onClose }) => {
                   type="text"
                   name="nickName"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                  value={formData.nickName}
-                  onChange={handleChange}
+                  value={employee.nickName}
+                  readOnly
                 />
               </div>
               <div>
@@ -105,8 +84,8 @@ const CreateEmployee = ({ onClose }) => {
                   type="date"
                   name="dateOfBirth"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                  value={formData.dateOfBirth}
-                  onChange={handleChange}
+                  value={employee.dateOfBirth}
+                  readOnly
                 />
               </div>
               <div>
@@ -114,8 +93,8 @@ const CreateEmployee = ({ onClose }) => {
                 <select
                   name="gender"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                  value={formData.gender}
-                  onChange={handleChange}
+                  value={employee.gender}
+                  disabled
                 >
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
@@ -130,8 +109,8 @@ const CreateEmployee = ({ onClose }) => {
                   type="text"
                   name="identificationNumber"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                  value={formData.identificationNumber}
-                  onChange={handleChange}
+                  value={employee.identificationNumber}
+                  readOnly
                 />
               </div>
             </div>
@@ -141,8 +120,8 @@ const CreateEmployee = ({ onClose }) => {
                 type="text"
                 name="location"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={formData.location}
-                onChange={handleChange}
+                value={employee.location}
+                readOnly
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -152,8 +131,8 @@ const CreateEmployee = ({ onClose }) => {
                   type="text"
                   name="email"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                  value={formData.email}
-                  onChange={handleChange}
+                  value={employee.email}
+                  readOnly
                 />
               </div>
               <div>
@@ -162,34 +141,36 @@ const CreateEmployee = ({ onClose }) => {
                   type="text"
                   name="phone"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                  value={formData.phone}
-                  onChange={handleChange}
+                  value={employee.phone}
+                  readOnly
                 />
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Start Date</label>
               <input
-                type="text"
+                type="date"
                 name="startDate"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={formData.startDate}
-                onChange={handleChange}
+                value={employee.startDate}
+                readOnly
               />
             </div>
-
             <div className="flex flex-col">
               <div className='flex justify-center mt-2'>
                 <button
-                  type="submit"
+                  type="button"
                   className="w-20 bg-green-500 text-white font-medium capitalize border-0 rounded-3xl ml-5 p-2 hover:bg-green-700 transition duration-300"
-                >Save
+                  onClick={handleConfirm}
+                >
+                  Confirm
                 </button>
                 <button
                   type="button"
                   className="w-20 bg-red-500 text-white font-medium capitalize border-0 rounded-3xl ml-5 p-2 hover:bg-red-700 transition duration-300"
                   onClick={handleCancel}
-                >Cancel
+                >
+                  Cancel
                 </button>
               </div>
             </div>
@@ -206,4 +187,4 @@ const CreateEmployee = ({ onClose }) => {
   );
 };
 
-export default CreateEmployee;
+export default DeleteEmployee;
