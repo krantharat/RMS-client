@@ -35,7 +35,7 @@ function AddBill({ open, handleOpen }) {
             </svg>
         </div>
         <DialogBody>
-            <Typography className="mb-10 -mt-7 items-center" color="gray" variant="lead">
+            <Typography className="mb-10 -mt-7" color="gray" variant="lead">
             06/07/2024
             </Typography>
             <div className="mb-3 xl:w-96">
