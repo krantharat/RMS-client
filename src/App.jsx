@@ -3,7 +3,7 @@ import './App.css'
 import MenuBar from './components/menuBar'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Summary from './pages/Summary/AllSummary'
-import Employee from './pages/Employee/AllEmployee'
+import AllEmployee from './pages/Employee/AllEmployee'
 import Menu from './pages/Menu/AllMenu'
 import Schedule from './pages/Schedule/AllSchedule'
 import Stock from './pages/Stock/AllStock'
@@ -16,7 +16,7 @@ function App() {
         {/* <Header/> */}
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Employee />} />
+            <Route path="/" element={<AllEmployee />} />
             <Route path='/Schedule' element={<Schedule />} />
             <Route path='/Menu' element={<Menu />} />
             <Route path='/Stock' element={<Stock />} />
