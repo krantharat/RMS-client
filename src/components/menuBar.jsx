@@ -5,7 +5,7 @@ function MenuBar() {
   return (
     <>
       <div className="flex flex-col w-1/6 min-w-44 h-auto bg-white text-black border-0 rounded-tr-3xl rounded-br-3xl p-6">
-      <a href="#logo.png" className="mb-4 self-center">
+      <a href="#logo.png" className="mb-3 self-center">
         <img src={"logo.png"} alt="Logo" className="w-20" />
       </a>
       <ul>
