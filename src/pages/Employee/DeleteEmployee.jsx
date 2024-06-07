@@ -1,59 +1,26 @@
 import React, { useState } from 'react';
-import { FaEdit } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
-import DeleteEmployee from './DeleteEmployee';
 
-const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
-  const [isEditable, setIsEditable] = useState(false);
-  const [isDelete, setIsDelete] = useState(false);
-  const [employee, setEmployee] = useState({ ...selectedEmployee });
+const DeleteEmployee = ({ selectedEmployee, onClose, onConfirm }) => {
+  const [employee] = useState(selectedEmployee);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setEmployee(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
-
-  const handleEditClick = () => {
-    setIsEditable(true);
-  };
-
-  const handleDeleteClick = () => {
-    setIsDelete(true);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setIsEditable(false);
+  const handleConfirm = () => {
+    onConfirm();
     onClose();
   };
 
   const handleCancel = () => {
-    setEmployee({ ...selectedEmployee });
-    setIsEditable(false);
     onClose();
   };
 
-  const closeDeleteModal = () => {
-    setIsDelete(false);
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="relative bg-white p-5 border-gray-200 rounded-2xl shadow-sm w-11/12 md:w-6/12 lg:w-6/12 h-auto">
         <div className="flex justify-center items-center">
-          <h3 className="text-2xl font-bold">Profile</h3>
-          {!isEditable && (
-            <FaEdit
-              className="size-6 text-blue-500 cursor-pointer hover:text-blue-800 transition duration-300 ml-3"
-              onClick={handleEditClick}
-            />
-          )}
+          <h3 className="text-2xl font-bold">Are you sure you want to delete this profile?</h3>
         </div>
         <div className="p-5 bg-white h-96 overflow-y-auto border border-gray-300 mt-3">
-          <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit}>
+          <form className="grid grid-cols-1 gap-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Employee Number</label>
@@ -62,8 +29,7 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                   name="employeeID"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   value={employee.employeeID}
-                  onChange={handleChange}
-                  readOnly={!isEditable}
+                  readOnly
                 />
               </div>
               <div>
@@ -73,8 +39,7 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                   name="position"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   value={employee.position}
-                  onChange={handleChange}
-                  readOnly={!isEditable}
+                  readOnly
                 />
               </div>
             </div>
@@ -87,8 +52,7 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                   name="firstName"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   value={employee.firstName}
-                  onChange={handleChange}
-                  readOnly={!isEditable}
+                  readOnly
                 />
               </div>
               <div>
@@ -98,8 +62,7 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                   name="lastName"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   value={employee.lastName}
-                  onChange={handleChange}
-                  readOnly={!isEditable}
+                  readOnly
                 />
               </div>
             </div>
@@ -112,8 +75,7 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                   name="nickName"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   value={employee.nickName}
-                  onChange={handleChange}
-                  readOnly={!isEditable}
+                  readOnly
                 />
               </div>
               <div>
@@ -123,8 +85,7 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                   name="dateOfBirth"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   value={employee.dateOfBirth}
-                  onChange={handleChange}
-                  readOnly={!isEditable}
+                  readOnly
                 />
               </div>
               <div>
@@ -133,8 +94,7 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                   name="gender"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   value={employee.gender}
-                  onChange={handleChange}
-                  disabled={!isEditable}
+                  disabled
                 >
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
@@ -150,8 +110,7 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                   name="identificationNumber"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   value={employee.identificationNumber}
-                  onChange={handleChange}
-                  readOnly={!isEditable}
+                  readOnly
                 />
               </div>
             </div>
@@ -162,8 +121,7 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                 name="location"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                 value={employee.location}
-                onChange={handleChange}
-                readOnly={!isEditable}
+                readOnly
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -174,8 +132,7 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                   name="email"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   value={employee.email}
-                  onChange={handleChange}
-                  readOnly={!isEditable}
+                  readOnly
                 />
               </div>
               <div>
@@ -185,50 +142,38 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                   name="phone"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   value={employee.phone}
-                  onChange={handleChange}
-                  readOnly={!isEditable}
+                  readOnly
                 />
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Start Date</label>
               <input
-                type="text"
+                type="date"
                 name="startDate"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                 value={employee.startDate}
-                onChange={handleChange}
-                readOnly={!isEditable}
+                readOnly
               />
             </div>
-            {isEditable && (
-              <div className="flex flex-col">
-                <div className="flex justify-end">
-                  <button
-                    type="button"
-                    className="w-28 text-red-500 text-sm font-medium capitalize border-0 rounded-3xl p-1 hover:text-red-700 hover:underline transition duration-300"
-                    onClick={handleDeleteClick}
-                  >
-                    Delete profile
-                  </button>
-                </div>
-                <div className='flex justify-center mt-2'>
-                  <button
-                    type="submit"
-                    className="w-20 bg-green-500 text-white font-medium capitalize border-0 rounded-3xl ml-5 p-2 hover:bg-green-700 transition duration-300"
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    className="w-20 bg-red-500 text-white font-medium capitalize border-0 rounded-3xl ml-5 p-2 hover:bg-red-700 transition duration-300"
-                    onClick={handleCancel}
-                  >
-                    Cancel
-                  </button>
-                </div>
+            <div className="flex flex-col">
+              <div className='flex justify-center mt-2'>
+                <button
+                  type="button"
+                  className="w-20 bg-green-500 text-white font-medium capitalize border-0 rounded-3xl ml-5 p-2 hover:bg-green-700 transition duration-300"
+                  onClick={handleConfirm}
+                >
+                  Confirm
+                </button>
+                <button
+                  type="button"
+                  className="w-20 bg-red-500 text-white font-medium capitalize border-0 rounded-3xl ml-5 p-2 hover:bg-red-700 transition duration-300"
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </button>
               </div>
-            )}
+            </div>
           </form>
         </div>
         <button
@@ -238,11 +183,8 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
           <IoMdCloseCircle className="size-7 text-red-500 cursor-pointer hover:text-red-700 transition duration-300 mr-1.5 mt-1" />
         </button>
       </div>
-      {isDelete && (
-        <DeleteEmployee selectedEmployee={selectedEmployee} onClose={closeDeleteModal} onConfirm={onConfirmDelete} />
-      )}
     </div>
   );
 };
 
-export default ViewEmployee;
+export default DeleteEmployee;
