@@ -1,83 +1,101 @@
-import React, { useState } from "react";
-import { Dialog, DialogHeader, DialogBody, DialogFooter, Button, Typography, Input, Select } from "@material-tailwind/react";
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import { IoMdCloseCircle } from "react-icons/io";
-import { menuOptions } from "./data";
+import { Button } from "@material-tailwind/react";
 
-function AddBill({ open, handleOpen, handleAddBill }) {
-  const [selectedMenu, setSelectedMenu] = useState(null);
-  const [quantity, setQuantity] = useState(1);
+const ViewBill = ({ selectedBill, onClose }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedBill, setEditedBill] = useState(selectedBill);
+  const [bill, setBill] = useState({ ...selectedBill });
 
-  const handleMenuChange = (value) => {
-    setSelectedMenu(value);
+  const handleEditClick = () => {
+    setIsEditing(true);
   };
 
-  const handleAddButtonClick = () => {
-    if (selectedMenu) {
-      handleAddBill({ menu: selectedMenu.label, quantity });
-      setSelectedMenu(null);
-      setQuantity(1);
-    }
+  const handleSaveClick = () => {
+    // Add your save logic here
+    setIsEditing(false);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditedBill({
+      ...editedBill,
+      [name]: value,
+    });
+  };
+
+  const handleCancel = () => {
+    onClose();
   };
 
   return (
-    <Dialog open={open} handler={handleOpen} className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="relative bg-white p-5 border-gray-200 rounded-2xl shadow-sm w-11/12 md:w-6/12 lg:w-6/12 h-auto">
-        <DialogHeader className="flex justify-between items-center">
-          <Typography className="text-4xl font-bold">Add Bill</Typography>
+        <div className="flex justify-between items-center">
+          <h3 className="text-2xl font-bold">Bill Details</h3>
           <button
-            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition duration-300"
-            onClick={handleOpen}
+            className="text-gray-500 hover:text-gray-700 transition duration-300"
+            onClick={onClose}
           >
             <IoMdCloseCircle className="size-7 text-red-500 cursor-pointer hover:text-red-700 transition duration-300 mr-1.5 mt-1" />
           </button>
-        </DialogHeader>
-        <DialogBody>
-          <div className="mb-4">
-            <Select
-              value={selectedMenu}
-              options={menuOptions}
-              onChange={handleMenuChange}
-              placeholder="Select Menu"
-            />
-            <div className="mt-4">
-              <Input
-                type="number"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                placeholder="Quantity"
-              />
-            </div>
-          </div>
-          {selectedMenu && (
-            <div className="mb-4">
-              <Typography variant="lead" color="blue-gray" className="font-normal">
-                Menu: {selectedMenu.label}
-              </Typography>
-              <Typography variant="lead" color="blue-gray" className="font-normal">
-                Category: {selectedMenu.category}
-              </Typography>
-              <Typography variant="lead" color="blue-gray" className="font-normal">
-                Price: {selectedMenu.price}
-              </Typography>
-              <Typography variant="lead" color="blue-gray" className="font-normal">
-                Cost: {selectedMenu.cost}
-              </Typography>
-            </div>
+        </div>
+        <div className="p-5 bg-white h-96 overflow-y-auto border border-gray-300 mt-3">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr>
+                <th className="border p-2">Menu</th>
+                <th className="border p-2">Category</th>
+                <th className="border p-2">Price</th>
+                <th className="border p-2">Cost</th>
+                <th className="border p-2">Quantity</th>
+                <th className="border p-2">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bill.billItems && bill.billItems.map((item, index) => (
+                <tr key={index}>
+                  <td className="border p-2">{item.menu}</td>
+                  <td className="border p-2">{item.category}</td>
+                  <td className="border p-2">{item.price.toFixed(2)} ฿</td>
+                  <td className="border p-2">{item.cost}</td>
+                  <td className="border p-2">
+                    {isEditing ? (
+                      <input
+                        type="number"
+                        name="qty"
+                        value={editedBill.billItems[index].qty}
+                        onChange={(e) => {
+                          const updatedItems = [...editedBill.billItems];
+                          updatedItems[index].qty = e.target.value;
+                          setEditedBill({ ...editedBill, billItems: updatedItems });
+                        }}
+                        className="border border-gray-300 rounded p-1 w-full"
+                      />
+                    ) : (
+                      item.qty
+                    )}
+                  </td>
+                  <td className="border p-2">{item.totalAmount} ฿</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex justify-end mt-4">
+          {isEditing ? (
+            <Button className="bg-green-300 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-full" onClick={handleSaveClick}>
+              Save
+            </Button>
+          ) : (
+            <Button className="bg-blue-300 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-full" onClick={handleEditClick}>
+              Edit
+            </Button>
           )}
-        </DialogBody>
-        <DialogFooter className="space-x-2">
-          <Button variant="filled" color="blue" onClick={handleAddButtonClick}>Add</Button>
-        </DialogFooter>
+        </div>
       </div>
-    </Dialog>
+    </div>
   );
-}
-
-AddBill.propTypes = {
-  open: PropTypes.bool.isRequired,
-  handleOpen: PropTypes.func.isRequired,
-  handleAddBill: PropTypes.func.isRequired,
 };
 
-export default AddBill;
+export default ViewBill;

@@ -1,149 +1,91 @@
-import React, { useState } from "react";
-import Header from "../../components/header";
-import { Card, Typography, Button, Input } from "@material-tailwind/react";
-import AddOrderPopup from "../../components/AddOrderPopup";  // ปรับเปลี่ยนตาม path ที่ถูกต้อง
+import React from "react";
+import { Dialog, DialogHeader, DialogBody, DialogFooter, Button, Typography } from "@material-tailwind/react";
+import PropTypes from 'prop-types';
 
-function Summary() {
-  const [open, setOpen] = useState(false);
+function ViewBill({ open, handleOpen, bill }) {
+  if (!bill) return null; // Return null if no bill is selected
 
-  const TABLE_HEAD = ["bill", "QTY", "amount"];
-
+  const TABLE_HEAD = ["Menu", "Category", "Price", "Cost", "QTY", "Total Amount"];
+  
   const TABLE_ROWS = [
-    {
-      bill: "bill 1",
-      QTY: "2",
-      amount: "400",
-    },
-    {
-      bill: "bill 2",
-      QTY: "3",
-      amount: "500",
-    },
-    {
-      bill: "bill 3",
-      QTY: "4",
-      amount: "600",
-    },
-    {
-      bill: "bill 4",
-      QTY: "5",
-      amount: "700",
-    },
-    {
-      bill: "bill 5",
-      QTY: "5",
-      amount: "800",
-    },
+    { menu: "Menu 1", category: "Category 1", price: 100, cost: 50, QTY: 2 },
+    { menu: "Menu 2", category: "Category 2", price: 200, cost: 100, QTY: 1 },
+    { menu: "Menu 3", category: "Category 3", price: 150, cost: 75, QTY: 3 },
   ];
 
-  const handleOpen = () => setOpen(!open);
+  const totalAmount = TABLE_ROWS.reduce((sum, row) => sum + row.price * row.QTY, 0);
 
   return (
-    <>
-      <div className="flex flex-col w-full">
-        <Header title="Summary" />
-        <h1 className='text-6xl text-black text-left font-bold ml-20 mt-10'>06 JUNE, 2024</h1>
-        {/* sale total boxes */}
-        <div className='flex justify-start space-x-10 mt-10 ml-20'>
-          <div className='p-6 bg-white rounded-xl flex items-center h-40 w-80'>
-            <div>
-              <div className="text-3xl font-bold text-black">Sales total</div>
-              <p className="text-slate-500 text-6xl font-bold mt-5">1234 ฿</p>
-            </div>
+    <Dialog open={open} handler={handleOpen} className="flex items-center justify-center">
+      <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg p-6">
+        <DialogHeader className="flex justify-between items-center">
+          <Typography className="text-4xl font-bold">View Bill</Typography>
+          <Button variant="text" color="red" onClick={handleOpen}>X</Button>
+        </DialogHeader>
+        <DialogBody>
+          <div className="mb-4">
+            <Typography variant="lead" color="blue-gray" className="font-normal">
+              {`Bill Number: ${bill.bill}`}
+            </Typography>
+            <Typography variant="lead" color="blue-gray" className="font-normal">
+              {`Date: ${new Date().toLocaleDateString()}`}
+            </Typography>
           </div>
-          <div className='p-6 bg-white rounded-xl flex items-center h-40 w-80'>
-            <div>
-              <div className="text-3xl font-bold text-black">Cost</div>
-              <p className="text-slate-500 text-6xl font-bold mt-5">5678 ฿</p>
-            </div>
+          <table className="w-full min-w-max table-auto text-left">
+            <thead>
+              <tr>
+                {TABLE_HEAD.map((head) => (
+                  <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
+                    <Typography variant="small" color="blue-gray" className="font-bold leading-none">{head}</Typography>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {TABLE_ROWS.map(({ menu, category, price, cost, QTY }, index) => {
+                const isLast = index === TABLE_ROWS.length - 1;
+                const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
+                return (
+                  <tr key={menu}>
+                    <td className={classes}>
+                      <Typography variant="small" color="blue-gray" className="font-normal">{menu}</Typography>
+                    </td>
+                    <td className={classes}>
+                      <Typography variant="small" color="blue-gray" className="font-normal">{category}</Typography>
+                    </td>
+                    <td className={classes}>
+                      <Typography variant="small" color="blue-gray" className="font-normal">{price}</Typography>
+                    </td>
+                    <td className={classes}>
+                      <Typography variant="small" color="blue-gray" className="font-normal">{cost}</Typography>
+                    </td>
+                    <td className={classes}>
+                      <Typography variant="small" color="blue-gray" className="font-normal">{QTY}</Typography>
+                    </td>
+                    <td className={classes}>
+                      <Typography variant="small" color="blue-gray" className="font-normal">{price * QTY}</Typography>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <div className="flex justify-end mt-4">
+            <Typography variant="lead" color="blue-gray" className="font-normal">{`Total Amount: ${totalAmount}`}</Typography>
           </div>
-          <div className='p-6 bg-white rounded-xl flex items-center h-40 w-80'>
-            <div>
-              <div className="text-3xl font-bold text-black">Profit</div>
-              <p className="text-slate-500 text-6xl font-bold mt-5">5678 ฿</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Table section */}
-        <div className="mt-10 mx-20 flex justify-center w-full">
-          <Card className="w-full p-6">
-            <div className="flex justify-between items-center mb-6">
-              <Typography className="text-5xl font-bold">
-                Orders
-              </Typography>
-              <div className="flex space-x-4">
-                <Input type="date" className="p-2 border border-gray-300 rounded-md" />
-                <Button className="bg-amber-300 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-full w-32" onClick={handleOpen}>Add</Button>
-                <Button className="bg-amber-300 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-full w-32">Delete</Button>
-              </div>
-            </div>
-            <table className="w-full min-w-max table-auto text-left">
-              <thead>
-                <tr>
-                  {TABLE_HEAD.map((head) => (
-                    <th
-                      key={head}
-                      className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
-                    >
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-bold leading-none"
-                      >
-                        {head}
-                      </Typography>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {TABLE_ROWS.map(({ bill, QTY, amount }, index) => {
-                  const isLast = index === TABLE_ROWS.length - 1;
-                  const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
-
-                  return (
-                    <tr key={bill}>
-                      <td className={classes}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {bill}
-                        </Typography>
-                      </td>
-                      <td className={classes}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {QTY}
-                        </Typography>
-                      </td>
-                      <td className={classes}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {amount}
-                        </Typography>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </Card>
-        </div>
+        </DialogBody>
+        <DialogFooter className="space-x-2">
+          <Button variant="text" color="red" onClick={handleOpen}>Close</Button>
+        </DialogFooter>
       </div>
-
-      {/* Add Order Pop-up */}
-      <AddOrderPopup open={open} handleOpen={handleOpen} />
-    </>
+    </Dialog>
   );
 }
 
-export default Summary;
+ViewBill.propTypes = {
+  open: PropTypes.bool.isRequired,
+  handleOpen: PropTypes.func.isRequired,
+  bill: PropTypes.object,
+};
+
+export default ViewBill;
