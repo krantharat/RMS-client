@@ -8,6 +8,7 @@ import CreateEmployee from "./CreateEmployee";
 function AllEmployee() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [createEmployee, setCreateEmployee] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const employees = [
     {
@@ -15,15 +16,15 @@ function AllEmployee() {
       firstName: "พัชณิดา",
       lastName: "เหมวรรณานุกูล",
       nickName: "พิณ",
-      position:"6648d9a9c7af439d3f43f55d",
+      position: "Chef",
       dateOfBirth: "1992-08-30",
-      gender: "6648d589b7b78c6eaacc1a83",
+      gender: "Female",
       identificationNumber: 1102455200366,
       location: "พระประแดง, สมุทรปราการ",
       email: "patchnide.hemw@mail.kmutt.ac.th",
       phone: "0631230987",
       startDate: "2019-10-20",
-  }
+    }
   ];
 
   const handleCardClick = (employee) => {
@@ -44,6 +45,18 @@ function AllEmployee() {
     setSelectedEmployee(null);
   };
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredEmployees = employees.filter(
+    (employee) =>
+      employee.employeeID.startsWith(searchTerm) ||
+      employee.firstName.toLowerCase().startsWith(searchTerm.toLowerCase()) ||
+      employee.lastName.toLowerCase().startsWith(searchTerm.toLowerCase()) ||
+      employee.position.toLowerCase().startsWith(searchTerm.toLowerCase())
+  );
+
   return (
     <>
       <div className="flex flex-col w-full">
@@ -53,8 +66,10 @@ function AllEmployee() {
           <form className="flex justify-end mr-5" onSubmit={(e) => e.preventDefault()}>
             <input
               type="text"
-              placeholder="Search employee by ID"
+              placeholder="Search employee by ID, firstname, lastname or position"
               className="w-4/12 border border-gray-300 rounded-3xl p-2 pl-4 shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+              value={searchTerm}
+              onChange={handleSearchChange}
             />
             <button
               type="button"
@@ -71,7 +86,7 @@ function AllEmployee() {
 
         <div className="flex flex-col p-5">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {employees.map((employee, index) => (
+            {filteredEmployees.map((employee, index) => (
               <EmployeeCard key={index} {...employee} onClick={() => handleCardClick(employee)} />
             ))}
           </div>

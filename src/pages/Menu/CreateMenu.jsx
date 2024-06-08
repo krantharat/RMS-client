@@ -93,7 +93,7 @@ const CreateMenu = ({ onClose }) => {
                 </div>
               </div>
               <div className="mb-4 flex justify-center items-center">
-                <div className="relative w-full h-full">
+                <div className="relative max-h-96 w-full h-80 flex items-center justify-center">
                   {formData.image && (
                     <img src={formData.image} alt="Menu" className="w-full h-full object-cover rounded-md" />
                   )}
