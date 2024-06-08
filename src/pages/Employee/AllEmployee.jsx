@@ -1,31 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../components/header";
 import { MdEmail } from "react-icons/md";
-import { FaPhoneVolume } from "react-icons/fa6";
+import { FaPhoneVolume } from "react-icons/fa";
 import ViewEmployee from "./ViewEmployee";
 import CreateEmployee from "./CreateEmployee";
+import { axiosInstance } from "../../lib/axiosInstance";
 
 function AllEmployee() {
+  const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [createEmployee, setCreateEmployee] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const employees = [
-    {
-      employeeID: "0001",
-      firstName: "พัชณิดา",
-      lastName: "เหมวรรณานุกูล",
-      nickName: "พิณ",
-      position: "Chef",
-      dateOfBirth: "1992-08-30",
-      gender: "Female",
-      identificationNumber: 1102455200366,
-      location: "พระประแดง, สมุทรปราการ",
-      email: "patchnide.hemw@mail.kmutt.ac.th",
-      phone: "0631230987",
-      startDate: "2019-10-20",
+  const fetchEmployees = async () => {
+    try {
+      const response = await axiosInstance.get('/api/employee/allEmployee');
+      setEmployees(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error getting employees:', error);
+      setError(error.message);
+      setLoading(false);
     }
-  ];
+  };
+
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
+
+  console.log(employees);
 
   const handleCardClick = (employee) => {
     setSelectedEmployee(employee);
@@ -42,6 +47,7 @@ function AllEmployee() {
 
   const handleDeleteEmployee = () => {
     console.log("Employee deleted:", selectedEmployee);
+    setEmployees(employees.filter(employee => employee !== selectedEmployee));
     setSelectedEmployee(null);
   };
 
@@ -56,6 +62,14 @@ function AllEmployee() {
       employee.lastName.toLowerCase().startsWith(searchTerm.toLowerCase()) ||
       employee.position.toLowerCase().startsWith(searchTerm.toLowerCase())
   );
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
 
   return (
     <>
@@ -86,9 +100,9 @@ function AllEmployee() {
 
         <div className="flex flex-col p-5">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {filteredEmployees.map((employee, index) => (
-              <EmployeeCard key={index} {...employee} onClick={() => handleCardClick(employee)} />
-            ))}
+            {/* {employees.map((item, index) => (
+              <EmployeeCard key={index} {...item} onClick={() => handleCardClick(item)} />
+            ))} */}
           </div>
         </div>
 
@@ -104,21 +118,21 @@ function AllEmployee() {
   );
 }
 
-const EmployeeCard = ({ firstName, lastName, position, email, phone, onClick }) => (
-  <div className="p-5 bg-white border border-gray-200 rounded-2xl shadow-sm cursor-pointer" onClick={onClick}>
-    <div className="flex justify-between items-center mb-3">
-      <h3 className="text-lg font-semibold">{firstName} {lastName}</h3>
-    </div>
-    <p className="text-gray-700 mb-3">{position}</p>
-    <div className="flex items-center mb-2">
-      <MdEmail className="text-gray-500 mr-2" />
-      <p className="text-gray-700">{email}</p>
-    </div>
-    <div className="flex items-center">
-      <FaPhoneVolume className="text-gray-500 mr-2" />
-      <p className="text-gray-700">{phone}</p>
-    </div>
-  </div>
-);
+// const EmployeeCard = ({ firstName, lastName, position, email, phone, onClick }) => (
+//   <div className="p-5 bg-white border border-gray-200 rounded-2xl shadow-sm cursor-pointer" onClick={onClick}>
+//     <div className="flex justify-between items-center mb-3">
+//       <h3 className="text-lg font-semibold">{firstName} {lastName}</h3>
+//     </div>
+//     <p className="text-gray-700 mb-3">{position}</p>
+//     <div className="flex items-center mb-2">
+//       <MdEmail className="text-gray-500 mr-2" />
+//       <p className="text-gray-700">{email}</p>
+//     </div>
+//     <div className="flex items-center">
+//       <FaPhoneVolume className="text-gray-500 mr-2" />
+//       <p className="text-gray-700">{phone}</p>
+//     </div>
+//   </div>
+// );
 
 export default AllEmployee;
