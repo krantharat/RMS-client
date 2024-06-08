@@ -1,65 +1,186 @@
-import React from "react";
-import {
-  Button,
-  Dialog,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-  Input,
-  Textarea,
-  Typography,
-} from "@material-tailwind/react";
-import PropTypes from 'prop-types';
+import React, { useState, useEffect } from 'react';
+import { IoMdCloseCircle } from "react-icons/io";
+import { menuData } from './data';
 
-function AddBill({ open, handleOpen }) {
+let billCounter = 1;
+
+const CreateBill = ({ onClose, onSave }) => {
+  const [selectedMenu, setSelectedMenu] = useState(null);
+  const [qty, setQty] = useState(1);
+  const [billItems, setBillItems] = useState([]);
+  const [billNumber, setBillNumber] = useState(billCounter);
+  const [currentDate, setCurrentDate] = useState('');
+
+  useEffect(() => {
+    setCurrentDate(new Date().toLocaleDateString());
+  }, []);
+
+  const handleMenuChange = (e) => {
+    const menuItem = menuData.find(item => item.id === parseInt(e.target.value));
+    setSelectedMenu(menuItem);
+  };
+
+  const handleQtyChange = (e) => {
+    setQty(e.target.value);
+  };
+
+  const handleAddItem = () => {
+    if (selectedMenu && qty > 0) {
+      setBillItems([...billItems, { ...selectedMenu, qty: parseInt(qty) }]);
+      setSelectedMenu(null);
+      setQty(1);
+    }
+  };
+
+  const calculateTotalAmount = () => {
+    return billItems.reduce((total, item) => total + (item.price * item.qty), 0).toFixed(2);
+  };
+
+  const calculateTotalCost = () => {
+    return billItems.reduce((total, item) => total + (item.cost), 0).toFixed(2);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const totalCost = calculateTotalCost();
+    const totalAmount = calculateTotalAmount();
+
+    onSave({
+      billNumber,
+      currentDate,
+      totalCost,
+      totalAmount,
+    });
+
+    billCounter += 1;
+    onClose();
+  };
+
+  const handleCancel = () => {
+    onClose();
+  };
+
   return (
-    <Dialog open={open} size="xs" handler={handleOpen}>
-        <div className="flex items-center justify-between">
-            <DialogHeader className="flex flex-col items-start">
-                <Typography className="mb-1 text-4xl font-bold">
-                    Add New Bill
-                </Typography>
-            </DialogHeader>
-            <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="mr-3 h-5 w-5 cursor-pointer"
-            onClick={handleOpen}
-            >
-            <path
-                fillRule="evenodd"
-                d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
-                clipRule="evenodd"
-            />
-            </svg>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="relative bg-white p-5 border-gray-200 rounded-2xl shadow-sm w-11/12 md:w-6/12 lg:w-6/12 h-auto">
+        <div className="flex justify-center items-center">
+          <h3 className="text-2xl font-bold">Add New Bill</h3>
         </div>
-        <DialogBody>
-            <Typography className="mb-10 -mt-7 items-center" color="gray" variant="lead">
-            06/07/2024
-            </Typography>
-            <div className="mb-3 xl:w-96">
+        <div className="p-5 bg-white h-96 overflow-y-auto border border-gray-300 mt-3">
+          <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit}>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Bill Number</label>
                 <input
-                    type="search"
-                    className="relative m-0 block w-full min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
-                    placeholder="search menu" />
+                  type="text"
+                  name="billNumber"
+                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                  value={billNumber}
+                  readOnly
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Date</label>
+                <input
+                  type="text"
+                  name="currentDate"
+                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                  value={currentDate}
+                  readOnly
+                />
+              </div>
             </div>
-        </DialogBody>
-        <DialogFooter className="space-x-2">
-            <Button variant="text" color="gray" onClick={handleOpen}>
-            Cancel
-            </Button>
-            <Button variant="gradient" color="gray" onClick={handleOpen}>
-            Send Message
-            </Button>
-        </DialogFooter>
-    </Dialog>
-  );
-}
 
-AddBill.propTypes = {
-  open: PropTypes.bool.isRequired,
-  handleOpen: PropTypes.func.isRequired,
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Search Menu</label>
+                <select
+                  name="menu"
+                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                  onChange={handleMenuChange}
+                  value={selectedMenu ? selectedMenu.id : ''}
+                >
+                  <option value="">Select a menu item</option>
+                  {menuData.map(item => (
+                    <option key={item.id} value={item.id}>
+                      {item.menu}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Quantity</label>
+                <input
+                  type="number"
+                  name="qty"
+                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                  value={qty}
+                  onChange={handleQtyChange}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-center mt-2">
+              <button
+                type="button"
+                className="bg-amber-300 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-full w-20"
+                onClick={handleAddItem}
+              >Add
+              </button>
+            </div>
+
+            <div className="mt-4">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr>
+                    <th className="border p-2">Menu</th>
+                    <th className="border p-2">Category</th>
+                    <th className="border p-2">Price</th>
+                    <th className="border p-2">Cost</th>
+                    <th className="border p-2">Quantity</th>
+                    <th className="border p-2">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {billItems.map((item, index) => (
+                    <tr key={index}>
+                      <td className="border p-2">{item.menu}</td>
+                      <td className="border p-2">{item.category}</td>
+                      <td className="border p-2">{item.price.toFixed(2)} ฿</td>
+                      <td className="border p-2">{item.cost}</td>
+                      <td className="border p-2">{item.qty}</td>
+                      <td className="border p-2">{(item.price * item.qty).toFixed(2)} ฿</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex justify-between items-center mt-4">
+              <h3 className="text-xl font-bold">Total Cost: {calculateTotalCost()} ฿</h3>
+              <h3 className="text-xl font-bold">Total Amount: {calculateTotalAmount()} ฿</h3>
+            </div>
+
+            <div className="flex flex-col">
+              <div className='flex justify-center mt-2'>
+                <button
+                  type="submit"
+                  className="w-20 bg-green-500 text-white font-medium capitalize border-0 rounded-3xl ml-5 p-2 hover:bg-green-700 transition duration-300"
+                >Save
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <button
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition duration-300"
+          onClick={onClose}
+        >
+          <IoMdCloseCircle className="size-7 text-red-500 cursor-pointer hover:text-red-700 transition duration-300 mr-1.5 mt-1" />
+        </button>
+      </div>
+    </div>
+  );
 };
 
-export default AddBill;
+export default CreateBill;
