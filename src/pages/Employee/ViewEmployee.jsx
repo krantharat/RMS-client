@@ -40,6 +40,10 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
     setIsDelete(false);
   };
 
+  const closeModal = () => {
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="relative bg-white p-5 border-gray-200 rounded-2xl shadow-sm w-11/12 md:w-6/12 lg:w-6/12 h-auto">

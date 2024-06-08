@@ -13,6 +13,11 @@ const DeleteEmployee = ({ selectedEmployee, onClose, onConfirm }) => {
     onClose();
   };
 
+  const closeModal = () => {
+    onClose();
+    window.location.href = '/';
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="relative bg-white p-5 border-gray-200 rounded-2xl shadow-sm w-11/12 md:w-6/12 lg:w-6/12 h-auto">
@@ -178,7 +183,7 @@ const DeleteEmployee = ({ selectedEmployee, onClose, onConfirm }) => {
         </div>
         <button
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition duration-300"
-          onClick={onClose}
+          onClick={closeModal}
         >
           <IoMdCloseCircle className="size-7 text-red-500 cursor-pointer hover:text-red-700 transition duration-300 mr-1.5 mt-1" />
         </button>

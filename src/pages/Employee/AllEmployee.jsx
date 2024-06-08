@@ -11,19 +11,19 @@ function AllEmployee() {
 
   const employees = [
     {
-      employeeID: "E001",
-      firstName: "John",
-      lastName: "Doe",
-      nickName: "Johnny",
-      position: "Manager",
-      dateOfBirth: "1985-01-01",
-      gender: "Male",
-      identificationNumber: "1234567890123",
-      location: "Bangkok",
-      email: "john@example.com",
-      phone: "123-456-7890",
-      startDate: "2020-01-01"
-    }
+      employeeID: "0001",
+      firstName: "พัชณิดา",
+      lastName: "เหมวรรณานุกูล",
+      nickName: "พิณ",
+      position:"6648d9a9c7af439d3f43f55d",
+      dateOfBirth: "1992-08-30",
+      gender: "6648d589b7b78c6eaacc1a83",
+      identificationNumber: 1102455200366,
+      location: "พระประแดง, สมุทรปราการ",
+      email: "patchnide.hemw@mail.kmutt.ac.th",
+      phone: "0631230987",
+      startDate: "2019-10-20",
+  }
   ];
 
   const handleCardClick = (employee) => {
