@@ -1,0 +1,174 @@
+import React, { useState } from 'react';
+import { FaEdit } from "react-icons/fa";
+import { IoMdCloseCircle } from "react-icons/io";
+import DeleteIngredient from './DeleteIngredient';
+
+const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) => {
+  const [isEditable, setIsEditable] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
+  const [ingredient, setIngredient] = useState({ ...selectedIngredient });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setIngredient(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const handleEditClick = () => {
+    setIsEditable(true);
+  };
+
+  const handleDeleteClick = () => {
+    setIsDelete(true);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsEditable(false);
+    onClose();
+  };
+
+  const handleCancel = () => {
+    setIngredient({ ...selectedIngredient });
+    setIsEditable(false);
+    onClose();
+  };
+
+  const closeDeleteModal = () => {
+    setIsDelete(false);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="relative bg-white p-5 border-gray-200 rounded-2xl shadow-sm w-11/12 md:w-6/12 lg:w-6/12 h-auto">
+        <div className="flex justify-center items-center">
+          <h3 className="text-2xl font-bold">Ingredient</h3>
+          {!isEditable && (
+            <FaEdit
+              className="size-6 text-blue-500 cursor-pointer hover:text-blue-800 transition duration-300 ml-3"
+              onClick={handleEditClick}
+            />
+          )}
+        </div>
+        <div className="p-5 bg-white h-96 overflow-y-auto border border-gray-300 mt-3">
+          <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit}>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Name</label>
+              <input
+                type="text"
+                name="name"
+                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                value={ingredient.name}
+                onChange={handleChange}
+                readOnly={!isEditable}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Category</label>
+              <select
+                name="category"
+                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                value={ingredient.category}
+                onChange={handleChange}
+                disabled={!isEditable}
+              >
+                <option value="Meat">Meat</option>
+                <option value="Fruit">Fruit</option>
+                <option value="Seafood">Seafood</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Unit of Measure</label>
+              <select
+                name="uom"
+                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                value={ingredient.uom}
+                onChange={handleChange}
+                disabled={!isEditable}
+              >
+                <option value="kg">kg</option>
+                <option value="l">l</option>
+                <option value="ml">ml</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Cost</label>
+              <input
+                type="text"
+                name="cost"
+                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                value={ingredient.cost}
+                onChange={handleChange}
+                readOnly={!isEditable}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Price</label>
+              <input
+                type="text"
+                name="price"
+                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                value={ingredient.price}
+                onChange={handleChange}
+                readOnly={!isEditable}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Low Amount of Ingredients</label>
+              <input
+                type="text"
+                name="lowAmount"
+                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                value={ingredient.lowAmount}
+                onChange={handleChange}
+                readOnly={!isEditable}
+              />
+            </div>
+
+            {isEditable && (
+              <div className="flex flex-col">
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    className="w-fit text-red-500 text-sm font-medium capitalize border-0 rounded-3xl p-1 hover:text-red-700 hover:underline transition duration-300"
+                    onClick={handleDeleteClick}
+                  >
+                    Delete Ingredient
+                  </button>
+                </div>
+                <div className='flex justify-center mt-2'>
+                  <button
+                    type="submit"
+                    className="w-20 bg-green-500 text-white font-medium capitalize border-0 rounded-3xl ml-5 p-2 hover:bg-green-700 transition duration-300"
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    className="w-20 bg-red-500 text-white font-medium capitalize border-0 rounded-3xl ml-5 p-2 hover:bg-red-700 transition duration-300"
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </form>
+        </div>
+        <button
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition duration-300"
+          onClick={onClose}
+        >
+          <IoMdCloseCircle className="size-7 text-red-500 cursor-pointer hover:text-red-700 transition duration-300 mr-1.5 mt-1" />
+        </button>
+      </div>
+      {isDelete && (
+        <DeleteIngredient selectedIngredient={selectedIngredient} onClose={closeDeleteModal} onConfirm={onConfirmDelete} />
+      )}
+    </div>
+  );
+};
+
+export default ViewIngredientDetail;
