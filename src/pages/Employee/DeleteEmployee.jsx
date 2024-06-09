@@ -19,7 +19,7 @@ const DeleteEmployee = ({ selectedEmployee, onClose, onConfirm }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="relative bg-white p-5 border-gray-200 rounded-2xl shadow-sm w-11/12 md:w-6/12 lg:w-6/12 h-auto">
         <div className="flex justify-center items-center">
           <h3 className="text-2xl font-bold">Are you sure you want to delete this profile?</h3>
@@ -39,13 +39,16 @@ const DeleteEmployee = ({ selectedEmployee, onClose, onConfirm }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Position</label>
-                <input
-                  type="text"
+                <select
                   name="position"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   value={employee.position}
                   readOnly
-                />
+                  >
+                    <option value="Chef">Chef</option>
+                    <option value="Waiter">Waiter</option>
+                    <option value="Waitress">Waitress</option>
+                  </select>
               </div>
             </div>
 

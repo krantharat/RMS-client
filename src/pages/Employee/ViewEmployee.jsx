@@ -1,12 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaEdit } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
 import DeleteEmployee from './DeleteEmployee';
+import { axiosInstance } from '../../lib/axiosInstance';
 
 const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
   const [isEditable, setIsEditable] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   const [employee, setEmployee] = useState({ ...selectedEmployee });
+  const [positions, setPositions] = useState([]);
+
+  const fetchPositions = async () => {
+    try {
+      const response = await axiosInstance.get('/api/employee/allPosition');
+      setPositions(response.data);
+    } catch (error) {
+      console.error('Error fetching positions:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedEmployee) {
+      fetchPositions();
+    }
+  }, [selectedEmployee]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -66,20 +83,25 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                   readOnly={!isEditable}
                 />
               </div>
+
+              {/* ยังติดปัญหาอยู่ */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Position</label>
                 <select
-                  name="position"
-                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                  value={employee.position}
-                  onChange={handleChange}
-                  disabled={!isEditable}
-                >
-                  <option value="Chef">Chef</option>
-                  <option value="Waiter">Waiter</option>
-                  <option value="Waitress">Waitress</option>
-                </select>
+                    name="position"
+                    className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                    value={employee.position}
+                    onChange={handleChange}
+                    disabled={!isEditable}
+                  >
+                    {positions.map((item, index) => (
+                      <option key={index} value={item.position}>
+                        {item.position}
+                      </option>
+                    ))}
+                  </select>
               </div>
+              
             </div>
 
             <div className="grid grid-cols-2 gap-4">
