@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaEdit } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
 import DeleteMenu from './DeleteMenu';
+import { axiosInstance } from '../../lib/axiosInstance';
 
 const ViewMenu = ({ selectedMenu, onClose, onConfirmDelete }) => {
   const [isEditable, setIsEditable] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   const [menu, setMenu] = useState({ ...selectedMenu });
+
+  const menuCategory = ['appetizer','main dish', 'soup', 'salad', 'drinks', 'dessert']
+
+  useEffect(() => {
+    setMenu({ ...selectedMenu });
+  }, [selectedMenu]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,11 +31,20 @@ const ViewMenu = ({ selectedMenu, onClose, onConfirmDelete }) => {
     setIsDelete(true);
   };
 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsEditable(false);
-    onClose();
-  };
+
+    try {
+      const url = `/api/menu/editMenu/${menu._id}`;
+      console.log(`PUT request URL: ${url}`);
+      await axiosInstance.put(url, menu);
+      setIsEditable(false);
+      onClose();
+    } catch (error) {
+      console.error('Error updating menu:', error);
+    } 
+};
 
   const handleCancel = () => {
     setMenu({ ...selectedMenu });
@@ -78,19 +94,24 @@ const ViewMenu = ({ selectedMenu, onClose, onConfirmDelete }) => {
                     className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                     value={menu.menuName}
                     onChange={handleChange}
-                    disabled={!isEditable}
+                    readOnly={!isEditable}
                   />
                 </div>
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700">Category</label>
-                  <input
-                    type="text"
-                    name="menuCategory"
+                  <select
+                    name="category"
                     className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                    value={menu.menuCategory.menuCategoryName}
+                    value={menu.menuCategory}
                     onChange={handleChange}
                     disabled={!isEditable}
-                  />
+                  >
+                    {menuCategory.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700">Price</label>
@@ -100,7 +121,7 @@ const ViewMenu = ({ selectedMenu, onClose, onConfirmDelete }) => {
                     className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                     value={menu.price}
                     onChange={handleChange}
-                    disabled={!isEditable}
+                    readOnly={!isEditable}
                   />
                 </div>
                 <div className="mt-4">
@@ -111,7 +132,7 @@ const ViewMenu = ({ selectedMenu, onClose, onConfirmDelete }) => {
                     className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                     value={menu.cost}
                     onChange={handleChange}
-                    disabled={!isEditable}
+                    readOnly={!isEditable}
                   />
                 </div>
               </div>

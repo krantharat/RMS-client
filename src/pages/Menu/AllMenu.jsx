@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from "../../components/header";
 import CreateMenu from './CreateMenu';
 import ViewMenu from './ViewMenu';
 import { axiosInstance } from '../../lib/axiosInstance';
-import { menu } from '@material-tailwind/react';
 
 function AllMenu() {
   const [menus, setMenus] = useState([]);
@@ -88,8 +87,8 @@ function AllMenu() {
                   <div key={index} className="p-5 bg-white border border-gray-200 rounded-2xl shadow-sm cursor-pointer"
                   onClick={()=> handleCardClick(item)}>
                   <div>
-                    {console.log(item.file)}
-                    <img src={item.file} alt={item.file} className="w-full h-60 object-cover rounded-lg mb-3" />
+                    {console.log(item.imageUrl)}
+                    <img src={item.imageUrl} alt={item.menuName} className="w-full h-60 object-cover rounded-lg mb-3" />
                   </div>
                   
                   <div className="flex justify-between items-center mb-3">
@@ -104,8 +103,8 @@ function AllMenu() {
                   <div key={index} className="p-5 bg-white border border-gray-200 rounded-2xl shadow-sm cursor-pointer"
                   onClick={()=> handleCardClick(item)}>
                   <div>
-                    {console.log(item.file)}
-                    <img src={item.file} alt={item.menuName} className="w-full h-60 object-cover rounded-lg mb-3" />
+                    {console.log(item.imageUrl)}
+                    <img src={item.imageUrl} alt={item.menuName} className="w-full h-60 object-cover rounded-lg mb-3" />
                   </div>
                   
                   <div className="flex justify-between items-center mb-3">
