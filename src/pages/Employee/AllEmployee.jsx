@@ -26,7 +26,7 @@ function AllEmployee() {
     }
   };
 
-  console.log(employees);
+  // console.log(employees);
 
   useEffect(() => {
     fetchEmployees();
