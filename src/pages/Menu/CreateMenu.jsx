@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { IoMdCloseCircle } from "react-icons/io";
+import { axiosInstance } from "../../lib/axiosInstance";
 
 const CreateMenu = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,8 @@ const CreateMenu = ({ onClose }) => {
     cost: '',
     image: ''
   });
+
+  const menuCategory = ['appetizer','main dish', 'soup', 'salad', 'drinks', 'dessert']
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,9 +35,14 @@ const CreateMenu = ({ onClose }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onClose();
+    try {
+      await axiosInstance.post('/api/menu/createMenu', formData);
+      onClose();
+    } catch (error) {
+      console.error('Error creating menu:', error);
+    }
   };
 
   const handleCancel = () => {
@@ -63,13 +71,18 @@ const CreateMenu = ({ onClose }) => {
                 </div>
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700">Category</label>
-                  <input
-                    type="text"
+                  <select
                     name="menuCategory"
                     className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                     value={formData.menuCategory}
                     onChange={handleChange}
-                  />
+                  >
+                  {menuCategory.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                  </select>
                 </div>
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700">Price</label>

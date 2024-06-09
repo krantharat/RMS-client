@@ -1,16 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IoMdCloseCircle } from "react-icons/io";
+import { axiosInstance } from '../../lib/axiosInstance';
 
 const DeleteMenu = ({ selectedMenu, onClose, onConfirm }) => {
-  const [menu] = useState(selectedMenu);
+  const [menu, setMenu] = useState({ ...selectedMenu });
 
-  const handleConfirm = () => {
-    onConfirm();
-    onClose();
+  const menuCategory = ['appetizer','main dish', 'soup', 'salad', 'drinks', 'dessert']
+
+  useEffect(() => {
+    setMenu({ ...selectedMenu });
+  }, [selectedMenu]);
+
+  const handleConfirm = async () => {
+    try {
+      const url = `/api/menu/deleteMenu/${menu._id}`;
+      await axiosInstance.delete(url);
+      console.log(`DEL request URL: ${url}`);
+      onConfirm();
+      onClose();
+    } catch (error) {
+      console.error('Error deleting employee:', error);
+    }
   };
 
   const handleCancel = () => {
+    setMenu({ ...selectedMenu });
     onClose();
+  };
+
+  const closeModal = () => {
+    onClose();
+    window.location.href = '/Menu';
   };
 
   return (
@@ -35,13 +55,18 @@ const DeleteMenu = ({ selectedMenu, onClose, onConfirm }) => {
                 </div>
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700">Category</label>
-                  <input
-                    type="text"
-                    name="menuCategory"
-                    className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                    value={menu.menuCategory}
-                    readOnly
-                  />
+                    <select
+                      name="category"
+                      className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                      value={menu.menuCategory}
+                      disabled
+                    >
+                      {menuCategory.map((category) => (
+                        <option key={category} value={category}>
+                          {category}
+                        </option>
+                      ))}
+                    </select>
                 </div>
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700">Price</label>
@@ -94,7 +119,7 @@ const DeleteMenu = ({ selectedMenu, onClose, onConfirm }) => {
         </div>
         <button
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition duration-300"
-          onClick={onClose}
+          onClick={closeModal}
         >
           <IoMdCloseCircle className="size-7 text-red-500 cursor-pointer hover:text-red-700 transition duration-300 mr-1.5 mt-1" />
         </button>
