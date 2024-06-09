@@ -1,12 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaEdit } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
 import DeleteEmployee from './DeleteEmployee';
+import { axiosInstance } from "../../lib/axiosInstance";
 
 const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
   const [isEditable, setIsEditable] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   const [employee, setEmployee] = useState({ ...selectedEmployee });
+  const [positions, setPositions] = useState([]);
+
+  const fetchEmployeeDetails = async () => {
+    try {
+      const response = await axiosInstance.get(`/api/employee/searchEmployee/?employeeID=${selectedEmployee.employeeID}`);
+      setEmployee(response.data);
+    } catch (error) {
+      console.error('Error fetching employee details:', error);
+    }
+  };
+
+  const fetchPositions = async () => {
+    try {
+      const response = await axiosInstance.get('/api/employee/allPosition');
+      setPositions(response.data);
+    } catch (error) {
+      console.error('Error fetching positions:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedEmployee) {
+      fetchEmployeeDetails();
+      fetchPositions();
+    }
+  }, [selectedEmployee]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,10 +51,15 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
     setIsDelete(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsEditable(false);
-    onClose();
+    try {
+      await axiosInstance.put(`/api/employee/${employee.id}`, employee);
+      setIsEditable(false);
+      onClose();
+    } catch (error) {
+      console.error('Error updating employee:', error);
+    }
   };
 
   const handleCancel = () => {
@@ -75,9 +107,11 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                   onChange={handleChange}
                   disabled={!isEditable}
                 >
-                  <option value="Chef">Chef</option>
-                  <option value="Waiter">Waiter</option>
-                  <option value="Waitress">Waitress</option>
+                  {positions.map((item, index) => (
+                    <option key={index} value={item.position}>
+                      {item.position}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
