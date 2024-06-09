@@ -1,31 +1,31 @@
 import './App.css'
 // import Header from './components/header'
 import MenuBar from './components/menuBar'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Summary from './pages/Summary/AllSummary'
-import AllEmployee from './pages/Employee/AllEmployee'
-import Menu from './pages/Menu/AllMenu'
 import Schedule from './pages/Schedule/AllSchedule'
-import Stock from './pages/Stock/AllStock'
 
+import AllEmployee from './pages/Employee/AllEmployee'
+import AllMenu from './pages/Menu/AllMenu'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+import AllStock from './pages/Stock/AllStock'
 function App() {
   return (
-    <>
+    <Router>
       <div className="flex">
-        <MenuBar/>
-        {/* <Header/> */}
-        <BrowserRouter>
+        <MenuBar />
+        <div className="flex-grow p-6">
           <Routes>
             <Route path="/" element={<AllEmployee />} />
-            <Route path='/Schedule' element={<Schedule />} />
-            <Route path='/Menu' element={<Menu />} />
-            <Route path='/Stock' element={<Stock />} />
-            <Route path='/Summary' element={<Summary />} />        
+            <Route path="/schedule" element={<Schedule />} />
+            <Route path="/menus" element={<AllMenu />} />
+            <Route path="/stock" element={<AllStock />} />
+            <Route path="/summary" element={<Summary />} />
           </Routes>
-        </BrowserRouter>
+        </div>
       </div>
-    </>
-  )
+    </Router>
+  );
 }
 
 export default App
