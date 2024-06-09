@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import { IoMdCloseCircle } from "react-icons/io";
+import { axiosInstance } from "../../lib/axiosInstance";
 
 const CreateIngredient = ({ onClose }) => {
   const [formData, setFormData] = useState({
-    name:'',
-    category:'',
-    uom:'',
-    cost:'',
-    price:'',
-    lowAmount:''
+    ingredientName: '',
+    ingredientCategory: '',
+    date: '',
+    inStock: 0,
+    uomType: '',
+    cost: '',
+    notiAmount: ''
   });
+
+  const uomType = ['g', 'kg', 'ml', 'l', 'pack'];
+  const ingredientCategory = ['meat', 'seafood', 'fruit', 'vegetable'];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,9 +24,20 @@ const CreateIngredient = ({ onClose }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onClose();
+    try {
+      // Ensure correct default values before sending
+      const payload = {
+        ...formData,
+        date: formData.date || new Date().toISOString().split('T')[0],
+        inStock: formData.inStock || 0,
+      };
+      await axiosInstance.post('/api/stock/createIngredient', payload);
+      onClose();
+    } catch (error) {
+      console.error('Error creating ingredient:', error);
+    }
   };
 
   const handleCancel = () => {
@@ -35,47 +51,53 @@ const CreateIngredient = ({ onClose }) => {
           <h3 className="text-2xl font-bold">Create New Ingredient</h3>
         </div>
         <div className="p-5 bg-white h-96 overflow-y-auto border border-gray-300 mt-3">
-        <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit}>
+          <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit}>
             <div>
               <label className="block text-sm font-medium text-gray-700">Name</label>
               <input
                 type="text"
-                name="name"
+                name="ingredientName"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={formData.name}
+                value={formData.ingredientName}
                 onChange={handleChange}
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Category</label>
               <select
-                name="category"
+                name="ingredientCategory"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={formData.category}
+                value={formData.ingredientCategory}
                 onChange={handleChange}
               >
-                <option value="Meat">Meat</option>
-                <option value="Fruit">Fruit</option>
-                <option value="Seafood">Seafood</option>
+                <option value="" disabled>Select a category</option>
+                {ingredientCategory.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Unit of Measure</label>
               <select
-                name="uom"
+                name="uomType"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={formData.uom}
+                value={formData.uomType}
                 onChange={handleChange}
               >
-                <option value="kg">kg</option>
-                <option value="l">l</option>
-                <option value="ml">ml</option>
+                <option value="" disabled>Select a unit of measure</option>
+                {uomType.map((uom) => (
+                  <option key={uom} value={uom}>
+                    {uom}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Cost</label>
               <input
-                type="text"
+                type="number"
                 name="cost"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                 value={formData.cost}
@@ -83,24 +105,13 @@ const CreateIngredient = ({ onClose }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Price</label>
-              <input
-                type="text"
-                name="price"
-                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={formData.price}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
               <label className="block text-sm font-medium text-gray-700">Low Amount of Ingredients</label>
               <input
-                type="text"
-                name="lowAmount"
+                type="number"
+                name="notiAmount"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={formData.lowAmount}
+                value={formData.notiAmount}
                 onChange={handleChange}
-
               />
             </div>
 
