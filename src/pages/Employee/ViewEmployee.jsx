@@ -2,22 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { FaEdit } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
 import DeleteEmployee from './DeleteEmployee';
-import { axiosInstance } from "../../lib/axiosInstance";
+import { axiosInstance } from '../../lib/axiosInstance';
 
 const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
   const [isEditable, setIsEditable] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   const [employee, setEmployee] = useState({ ...selectedEmployee });
   const [positions, setPositions] = useState([]);
-
-  const fetchEmployeeDetails = async () => {
-    try {
-      const response = await axiosInstance.get(`/api/employee/searchEmployee/?employeeID=${selectedEmployee.employeeID}`);
-      setEmployee(response.data);
-    } catch (error) {
-      console.error('Error fetching employee details:', error);
-    }
-  };
 
   const fetchPositions = async () => {
     try {
@@ -30,7 +21,6 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
 
   useEffect(() => {
     if (selectedEmployee) {
-      fetchEmployeeDetails();
       fetchPositions();
     }
   }, [selectedEmployee]);
@@ -51,15 +41,10 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
     setIsDelete(true);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await axiosInstance.put(`/api/employee/${employee.id}`, employee);
-      setIsEditable(false);
-      onClose();
-    } catch (error) {
-      console.error('Error updating employee:', error);
-    }
+    setIsEditable(false);
+    onClose();
   };
 
   const handleCancel = () => {
@@ -98,22 +83,25 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                   readOnly={!isEditable}
                 />
               </div>
+
+              {/* ยังติดปัญหาอยู่ */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Position</label>
                 <select
-                  name="position"
-                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                  value={employee.position}
-                  onChange={handleChange}
-                  disabled={!isEditable}
-                >
-                  {positions.map((item, index) => (
-                    <option key={index} value={item.position}>
-                      {item.position}
-                    </option>
-                  ))}
-                </select>
+                    name="position"
+                    className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                    value={employee.position}
+                    onChange={handleChange}
+                    disabled={!isEditable}
+                  >
+                    {positions.map((item, index) => (
+                      <option key={index} value={item.position}>
+                        {item.position}
+                      </option>
+                    ))}
+                  </select>
               </div>
+              
             </div>
 
             <div className="grid grid-cols-2 gap-4">
