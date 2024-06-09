@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IoMdCloseCircle } from "react-icons/io";
+import { axiosInstance } from "../../lib/axiosInstance";
 
 const CreateEmployee = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -16,6 +17,20 @@ const CreateEmployee = ({ onClose }) => {
     phone: '',
     startDate: ''
   });
+  const [positions, setPositions] = useState([]);
+
+  const fetchPositions = async () => {
+    try {
+      const response = await axiosInstance.get('/api/employee/allPosition');
+      setPositions(response.data);
+    } catch (error) {
+      console.error('Error fetching positions:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPositions();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,9 +40,14 @@ const CreateEmployee = ({ onClose }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onClose();
+    try {
+      await axiosInstance.post('/api/employee', formData);
+      onClose();
+    } catch (error) {
+      console.error('Error creating employee:', error);
+    }
   };
 
   const handleCancel = () => {
@@ -55,13 +75,18 @@ const CreateEmployee = ({ onClose }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Position</label>
-                <input
-                  type="text"
+                <select
                   name="position"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   value={formData.position}
                   onChange={handleChange}
-                />
+                >
+                  {positions.map((position, index) => (
+                    <option key={index} value={position.position}>
+                      {position.position}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -170,7 +195,7 @@ const CreateEmployee = ({ onClose }) => {
             <div>
               <label className="block text-sm font-medium text-gray-700">Start Date</label>
               <input
-                type="text"
+                type="date"
                 name="startDate"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                 value={formData.startDate}
