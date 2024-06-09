@@ -8,8 +8,9 @@ import ViewIngredientDetail from "./ViewIngredientDetail";
 function AllStock() {
   const [currentDate, setCurrentDate] = useState("");
   const [selectedIngredient, setSelectedIngredient] = useState(null);
-  const [createIngredient, setCreateIngredient] = useState(false); // Renamed from createEmployee to createIngredient
+  const [createIngredient, setCreateIngredient] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [ingredients, setIngredients] = useState([
     { name: "Flour", category: "Bakery", date: "2024-06-01", instock: "20", uom: "kg", cost: "20" },
     { name: "Sugar", category: "Sweeteners", date: "2024-06-05", instock: "50", uom: "kg", cost: "15" },
@@ -36,11 +37,10 @@ function AllStock() {
 
   const closeModal = () => {
     setSelectedIngredient(null);
-    setCreateIngredient(false); // Close create ingredient modal
+    setCreateIngredient(false);
   };
 
   const handleDeleteIngredient = () => {
-    console.log("Ingredient deleted:", selectedIngredient);
     setIngredients(ingredients.filter(ingredient => ingredient !== selectedIngredient));
     setSelectedIngredient(null);
   };
@@ -57,6 +57,10 @@ function AllStock() {
     (ingredient) =>
       ingredient.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const toggleUpdateMode = () => {
+    setIsUpdateMode(!isUpdateMode);
+  };
 
   return (
     <>
@@ -79,7 +83,7 @@ function AllStock() {
               <input
                 type="text"
                 placeholder="Search ingredient by name"
-                className="w-4/12 border border-gray-300 rounded-3xl p-2 pl-4 shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                className="w-96 border border-gray-300 rounded-3xl p-2 pl-4 shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                 value={searchTerm}
                 onChange={handleSearchChange}
               />
@@ -94,14 +98,9 @@ function AllStock() {
               <button
                 type="button"
                 className="w-24 bg-green-500 text-white font-medium capitalize border-0 rounded-3xl p-2 hover:bg-green-600 transition duration-300 mt-2 md:mt-0"
+                onClick={toggleUpdateMode}
               >
                 Update
-              </button>
-              <button
-                type="button"
-                className="w-24 bg-red-500 text-white font-medium capitalize border-0 rounded-3xl p-2 hover:bg-red-600 transition duration-300 mt-2 md:mt-0"
-              >
-                Delete
               </button>
             </div>
           </form>
@@ -111,7 +110,7 @@ function AllStock() {
           <table className="min-w-full bg-white border border-gray-200 shadow-sm">
             <thead>
               <tr>
-                <th className="py-2 px-3 border-b text-center">Select</th>
+                {isUpdateMode && <th className="py-2 px-3 border-b text-center">Select</th>}
                 <th className="py-2 px-3 border-b">Ingredient</th>
                 <th className="py-2 px-3 border-b">Category</th>
                 <th className="py-2 px-3 border-b text-center">Date</th>
@@ -123,7 +122,7 @@ function AllStock() {
             </thead>
             <tbody>
               {filteredIngredient.map((ingredient, index) => (
-                <IngredientRow key={index} {...ingredient} onClick={() => handleViewIngredient(ingredient)} />
+                <IngredientRow key={index} {...ingredient} isUpdateMode={isUpdateMode} onClick={() => handleViewIngredient(ingredient)} />
               ))}
             </tbody>
           </table>
@@ -145,12 +144,10 @@ function AllStock() {
   );
 }
 
-const IngredientRow = ({ name, category, date, instock, uom, cost, onClick }) => (
+const IngredientRow = ({ name, category, date, instock, uom, cost, onClick, isUpdateMode }) => (
   <tr>
-    <td className="py-2 px-3 border-b text-center">
-      <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-600" />
-    </td>
-    <td className={`py-2 px-3 border-b font-medium cursor-pointer ${instock === "0" ? "text-red-500" : "text-green-500"}`} onClick={onClick}>{name}</td>
+    {isUpdateMode && <td className="py-2 px-3 border-b text-center"><input type="checkbox" className="form-checkbox h-4 w-4 text-blue-600" /></td>}
+    <td className={`py-2 px-3 border-b font-medium cursor-pointer ${instock === "0" ? "text-red-500" : "text-green-500" }`} onClick={onClick}>{name}</td>
     <td className={`py-2 px-3 border-b font-medium ${instock === "0" ? "text-red-500" : "text-green-500"}`}>{category}</td>
     <td className={`py-2 px-3 border-b font-medium text-center ${instock === "0" ? "text-red-500" : "text-green-500"}`}>{date}</td>
     <td className={`py-2 px-3 border-b font-medium text-center ${instock === "0" ? "text-red-500" : "text-green-500"}`}>{instock}</td>
