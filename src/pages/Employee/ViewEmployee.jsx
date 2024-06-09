@@ -9,19 +9,41 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
   const [isDelete, setIsDelete] = useState(false);
   const [employee, setEmployee] = useState({ ...selectedEmployee });
   const [positions, setPositions] = useState([]);
+  const [empPosition, setEmpPosition] = useState([]);
 
-  const fetchPositions = async () => {
-    try {
-      const response = await axiosInstance.get('/api/employee/allPosition');
-      setPositions(response.data);
-    } catch (error) {
-      console.error('Error fetching positions:', error);
-    }
-  };
+  const Position = ['Chef','Waiter','Waitress','Cashier'];
+  // const fetchPositions = async () => {
+  //   try {
+  //     const response = await axiosInstance.get('/api/employee/allPosition');
+  //     setPositions(response.data);
+  //   } catch (error) {
+  //     console.error('Error fetching positions:', error);
+  //   }
+  // };
+
+  // const fetchEmployeePosition = async () => {
+  //   try {
+  //     const response = await axiosInstance.get('/api/employee/allEmployee');
+  //     setEmpPosition(response.data);
+  //   } catch (error) {
+  //     console.error('Error fetching positions:', error);
+  //   }
+  // };
+
+  // if (empPosition.length > 0) {
+  //   console.log(empPosition[0].position.position);
+  // } else {
+  //   console.log('empPosition is empty or not yet loaded');
+  // }
+
+  // console.log(empPosition);
+
+  // console.log(positions)
 
   useEffect(() => {
     if (selectedEmployee) {
-      fetchPositions();
+      // fetchEmployeePosition();
+      // fetchPositions();
     }
   }, [selectedEmployee]);
 
@@ -94,10 +116,8 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                     onChange={handleChange}
                     disabled={!isEditable}
                   >
-                    {positions.map((item, index) => (
-                      <option key={index} value={item.position}>
-                        {item.position}
-                      </option>
+                    {Position.map(position => (
+                      <option key={position} value={position}>{position}</option>
                     ))}
                   </select>
               </div>
