@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { IoMdCloseCircle } from "react-icons/io";
-import { menuData } from './data';
+import { axiosInstance } from "../../lib/axiosInstance";
 
 let billCounter = 1;
 
@@ -10,25 +10,50 @@ const CreateBill = ({ onClose, onSave }) => {
   const [billItems, setBillItems] = useState([]);
   const [billNumber, setBillNumber] = useState(billCounter);
   const [currentDate, setCurrentDate] = useState('');
+  const [menus, setMenus] = useState([]);
+
+  const fetchMenu = async () => {
+    try {
+      const response = await axiosInstance.get('/api/menu/allMenu');
+      setMenus(response.data);
+    } catch (error) {
+      console.error('Error getting menus:', error);
+    }
+  };
 
   useEffect(() => {
     setCurrentDate(new Date().toLocaleDateString());
+    fetchMenu();
   }, []);
 
   const handleMenuChange = (e) => {
-    const menuItem = menuData.find(item => item.id === parseInt(e.target.value));
+    console.log('handleMenuChange is called');
+    const menuItemId = (e.target.value);
+    console.log('menuItemId:', menuItemId);
+    console.log('menus:', menus);
+    if (isNaN(menuItemId)) {
+      console.error('Invalid input: Not a number');
+      return;
+  }
+    const menuItem = menus.find((item) => item._id === menuItemId);
+    console.log('menuItem:', menuItem);
     setSelectedMenu(menuItem);
   };
 
   const handleQtyChange = (e) => {
-    setQty(e.target.value);
+    setQty(parseInt(e.target.value));
   };
 
   const handleAddItem = () => {
+    console.log('handleAddItem is called');
+    console.log('selectedMenu:', selectedMenu);
+    console.log('qty:', qty);
     if (selectedMenu && qty > 0) {
-      setBillItems([...billItems, { ...selectedMenu, qty: parseInt(qty) }]);
+      setBillItems([...billItems, { ...selectedMenu, qty }]);
       setSelectedMenu(null);
       setQty(1);
+    } else {
+      console.error('Invalid selected menu or quantity');
     }
   };
 
@@ -37,27 +62,39 @@ const CreateBill = ({ onClose, onSave }) => {
   };
 
   const calculateTotalCost = () => {
-    return billItems.reduce((total, item) => total + (item.cost), 0).toFixed(2);
+    return billItems.reduce((total, item) => total + (item.cost * item.qty), 0).toFixed(2);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const totalCost = calculateTotalCost();
-    const totalAmount = calculateTotalAmount();
+    try {
+      await axiosInstance.post('/api/summary/addBill', {
+        billNumber,
+        date: currentDate,
+        totalCost: calculateTotalCost(),
+        totalAmount: calculateTotalAmount(),
+        menuitem: billItems.map(item => ({
+          menu: item.menu,
+          menuCategory: item.menuCategory,
+          qty: item.qty,
+          price: item.price,
+          cost: item.cost * item.qty,
+          amount: item.price * item.qty
+        }))
+      });
 
-    onSave({
-      billNumber,
-      currentDate,
-      totalCost,
-      totalAmount,
-    });
+      onSave({
+        billNumber,
+        date: currentDate,
+        totalCost: calculateTotalCost(),
+        totalAmount: calculateTotalAmount(),
+      });
 
-    billCounter += 1;
-    onClose();
-  };
-
-  const handleCancel = () => {
-    onClose();
+      billCounter += 1;
+      onClose();
+    } catch (error) {
+      console.error('Error creating bill:', error);
+    }
   };
 
   return (
@@ -93,17 +130,18 @@ const CreateBill = ({ onClose, onSave }) => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Search Menu</label>
+                <label className="block text-sm font-medium text-gray-700">Select Menu</label>
                 <select
                   name="menu"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   onChange={handleMenuChange}
-                  value={selectedMenu ? selectedMenu.id : ''}
+                  value={selectedMenu ? selectedMenu._id : ''}
+                  // value={selectedMenu}
                 >
-                  <option value="">Select a menu item</option>
-                  {menuData.map(item => (
-                    <option key={item.id} value={item.id}>
-                      {item.menu}
+                  {/* <option key="default" value="">Select a menu item</option> */}
+                  {menus.map((menu) => (
+                    <option key={menu._id} value ={menu._id}>
+                      {menu.menuName}
                     </option>
                   ))}
                 </select>
@@ -116,6 +154,7 @@ const CreateBill = ({ onClose, onSave }) => {
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   value={qty}
                   onChange={handleQtyChange}
+                  min="1"
                 />
               </div>
             </div>
@@ -144,10 +183,10 @@ const CreateBill = ({ onClose, onSave }) => {
                 <tbody>
                   {billItems.map((item, index) => (
                     <tr key={index}>
-                      <td className="border p-2">{item.menu}</td>
-                      <td className="border p-2">{item.category}</td>
+                      <td className="border p-2">{item.menuName}</td>
+                      <td className="border p-2">{item.menuCategory}</td>
                       <td className="border p-2">{item.price.toFixed(2)} ฿</td>
-                      <td className="border p-2">{item.cost}</td>
+                      <td className="border p-2">{(item.cost * item.qty).toFixed(2)} ฿</td>
                       <td className="border p-2">{item.qty}</td>
                       <td className="border p-2">{(item.price * item.qty).toFixed(2)} ฿</td>
                     </tr>
@@ -184,3 +223,4 @@ const CreateBill = ({ onClose, onSave }) => {
 };
 
 export default CreateBill;
+

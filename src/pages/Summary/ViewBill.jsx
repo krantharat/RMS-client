@@ -1,11 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IoMdCloseCircle } from "react-icons/io";
 import { Button } from "@material-tailwind/react";
+import { axiosInstance } from "../../lib/axiosInstance";
 
 const ViewBill = ({ selectedBill, onClose }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedBill, setEditedBill] = useState(selectedBill);
   const [bill, setBill] = useState({ ...selectedBill });
+
+  const fetchBillDetail = async () => {
+    try {
+      const response = await axiosInstance.get(`/api/summary/getBillById/?billNumber=${selectedBill.billNumber}`);
+      setBill(response.data);
+    } catch (error) {
+      console.error('Error fetching Bill details:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedBill) {
+      fetchBillDetail();
+    }
+  }, [selectedBill]);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -14,6 +30,18 @@ const ViewBill = ({ selectedBill, onClose }) => {
   const handleSaveClick = () => {
     // Add your save logic here
     setIsEditing(false);
+  };
+
+  const handleDeleteClick = async () => {
+    try {
+      // Perform delete operation using axios or fetch
+      // Example:
+      // await axiosInstance.delete(`/api/bill/delete/${selectedBill.id}`);
+      // After successful deletion, you can close the modal or perform any necessary actions
+      onClose();
+    } catch (error) {
+      console.error('Error deleting bill:', error);
+    }
   };
 
   const handleChange = (e) => {
@@ -84,9 +112,14 @@ const ViewBill = ({ selectedBill, onClose }) => {
         </div>
         <div className="flex justify-end mt-4">
           {isEditing ? (
-            <Button className="bg-green-300 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-full" onClick={handleSaveClick}>
-              Save
-            </Button>
+            <>
+              <Button className="bg-green-300 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-full mr-4" onClick={handleSaveClick}>
+                Save
+              </Button>
+              <Button className="bg-red-300 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-full" onClick={handleDeleteClick}>
+                Delete
+              </Button>
+            </>
           ) : (
             <Button className="bg-blue-300 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-full" onClick={handleEditClick}>
               Edit
