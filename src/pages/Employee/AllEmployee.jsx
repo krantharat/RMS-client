@@ -11,18 +11,13 @@ function AllEmployee() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [createEmployee, setCreateEmployee] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   const fetchEmployees = async () => {
     try {
       const response = await axiosInstance.get('/api/employee/allEmployee');
       setEmployees(response.data);
-      setLoading(false);
     } catch (error) {
       console.error('Error getting employees:', error);
-      setError(error.message);
-      setLoading(false);
     }
   };
 
@@ -59,17 +54,9 @@ function AllEmployee() {
     (employee) =>
       employee.employeeID.startsWith(searchTerm) ||
       employee.firstName.toLowerCase().startsWith(searchTerm.toLowerCase()) ||
-      employee.lastName.toLowerCase().startsWith(searchTerm.toLowerCase()) ||
-      employee.position.position.toLowerCase().startsWith(searchTerm.toLowerCase())
+      employee.lastName.toLowerCase().startsWith(searchTerm.toLowerCase())
   );
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
 
   return (
     <>
@@ -80,7 +67,7 @@ function AllEmployee() {
           <form className="flex justify-end mr-5" onSubmit={(e) => e.preventDefault()}>
             <input
               type="text"
-              placeholder="Search employee by ID, firstname, lastname or position"
+              placeholder="Search employee by ID, firstname, lastname"
               className="w-4/12 border border-gray-300 rounded-3xl p-2 pl-4 shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
               value={searchTerm}
               onChange={handleSearchChange}
@@ -106,7 +93,7 @@ function AllEmployee() {
                   <div className="flex justify-between items-center mb-3">
                     <h3 className="text-lg font-semibold">{item.firstName} {item.lastName}</h3>
                   </div>
-                  <p className="text-gray-700 mb-3">{item.position.position}</p>
+                  <p className="text-gray-700 mb-3">{item.position}</p>
                   <div className="flex items-center mb-2">
                     <MdEmail className="text-gray-500 mr-2" />
                     <p className="text-gray-700">{item.email}</p>
@@ -123,7 +110,7 @@ function AllEmployee() {
                   <div className="flex justify-between items-center mb-3">
                     <h3 className="text-lg font-semibold">{item.firstName} {item.lastName}</h3>
                   </div>
-                  <p className="text-gray-700 mb-3">{item.position.position}</p>
+                  <p className="text-gray-700 mb-3">{item.position}</p>
                   <div className="flex items-center mb-2">
                     <MdEmail className="text-gray-500 mr-2" />
                     <p className="text-gray-700">{item.email}</p>

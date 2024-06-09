@@ -8,21 +8,14 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
   const [isEditable, setIsEditable] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   const [employee, setEmployee] = useState({ ...selectedEmployee });
-  const [positions, setPositions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const fetchPositions = async () => {
-    try {
-      const response = await axiosInstance.get('/api/employee/allPosition');
-      setPositions(response.data);
-    } catch (error) {
-      console.error('Error fetching positions:', error);
-    }
-  };
+  const positions = ['Chef', 'Waiter', 'Waitress', 'Cashier'];
+  const gender = ['Male', 'Female', 'Other'];
 
   useEffect(() => {
-    if (selectedEmployee) {
-      fetchPositions();
-    }
+    setEmployee({ ...selectedEmployee });
   }, [selectedEmployee]);
 
   const handleChange = (e) => {
@@ -41,11 +34,24 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
     setIsDelete(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsEditable(false);
-    onClose();
-  };
+    setIsLoading(true);
+    try {
+      console.log(`Submitting update for employee ID: ${employee._id}`);
+      const url = `/api/employee/editEmployee/${employee._id}`;
+      console.log(`PUT request URL: ${url}`);
+      await axiosInstance.put(url, employee);
+      setIsEditable(false);
+      onClose();
+    } catch (error) {
+      console.error('Error updating employee:', error);
+      setError('Error updating employee');
+    } finally {
+      setIsLoading(false);
+    }
+};
+
 
   const handleCancel = () => {
     setEmployee({ ...selectedEmployee });
@@ -70,6 +76,7 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
           )}
         </div>
         <div className="p-5 bg-white h-96 overflow-y-auto border border-gray-300 mt-3">
+          {error && <div className="text-red-500">{error}</div>}
           <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -84,22 +91,21 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                 />
               </div>
 
-              {/* ยังติดปัญหาอยู่ */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Position</label>
                 <select
-                    name="position"
-                    className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                    value={employee.position}
-                    onChange={handleChange}
-                    disabled={!isEditable}
-                  >
-                    {positions.map((item, index) => (
-                      <option key={index} value={item.position}>
-                        {item.position}
-                      </option>
-                    ))}
-                  </select>
+                  name="position"
+                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                  value={employee.position}
+                  onChange={handleChange}
+                  disabled={!isEditable}
+                >
+                  {positions.map((position) => (
+                    <option key={position} value={position}>
+                      {position}
+                    </option>
+                  ))}
+                </select>
               </div>
               
             </div>
@@ -161,9 +167,11 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                   onChange={handleChange}
                   disabled={!isEditable}
                 >
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
+                  {gender.map((g) => (
+                    <option key={g} value={g}>
+                      {g}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -241,8 +249,9 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                   <button
                     type="submit"
                     className="w-20 bg-green-500 text-white font-medium capitalize border-0 rounded-3xl ml-5 p-2 hover:bg-green-700 transition duration-300"
+                    disabled={isLoading}
                   >
-                    Save
+                    {isLoading ? 'Saving...' : 'Save'}
                   </button>
                   <button
                     type="button"

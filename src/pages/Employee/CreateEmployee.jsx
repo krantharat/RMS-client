@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { IoMdCloseCircle } from "react-icons/io";
 import { axiosInstance } from "../../lib/axiosInstance";
 
@@ -17,20 +17,9 @@ const CreateEmployee = ({ onClose }) => {
     phone: '',
     startDate: ''
   });
-  const [positions, setPositions] = useState([]);
 
-  const fetchPositions = async () => {
-    try {
-      const response = await axiosInstance.get('/api/employee/allPosition');
-      setPositions(response.data);
-    } catch (error) {
-      console.error('Error fetching positions:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchPositions();
-  }, []);
+  const positions = ['Chef', 'Waiter', 'Waitress', 'Cashier'];
+  const gender = ['Male', 'Female', 'Other'];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,7 +32,7 @@ const CreateEmployee = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axiosInstance.post('/api/employee', formData);
+      await axiosInstance.post('/api/employee/createEmployee', formData);
       onClose();
     } catch (error) {
       console.error('Error creating employee:', error);
@@ -81,9 +70,9 @@ const CreateEmployee = ({ onClose }) => {
                   value={formData.position}
                   onChange={handleChange}
                 >
-                  {positions.map((position, index) => (
-                    <option key={index} value={position.position}>
-                      {position.position}
+                  {positions.map((position) => (
+                    <option key={position} value={position}>
+                      {position}
                     </option>
                   ))}
                 </select>
@@ -142,12 +131,15 @@ const CreateEmployee = ({ onClose }) => {
                   value={formData.gender}
                   onChange={handleChange}
                 >
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
+                  {gender.map((g) => (
+                    <option key={g} value={g}>
+                      {g}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
+
             <div className="grid grid-cols-1">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Identification Number</label>
@@ -160,6 +152,7 @@ const CreateEmployee = ({ onClose }) => {
                 />
               </div>
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Location</label>
               <input
@@ -170,6 +163,7 @@ const CreateEmployee = ({ onClose }) => {
                 onChange={handleChange}
               />
             </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Email</label>
@@ -192,6 +186,7 @@ const CreateEmployee = ({ onClose }) => {
                 />
               </div>
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Start Date</label>
               <input

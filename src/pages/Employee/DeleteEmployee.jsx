@@ -1,15 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IoMdCloseCircle } from "react-icons/io";
+import { axiosInstance } from "../../lib/axiosInstance";
 
 const DeleteEmployee = ({ selectedEmployee, onClose, onConfirm }) => {
-  const [employee] = useState(selectedEmployee);
+  const [employee, setEmployee] = useState({ ...selectedEmployee });
 
-  const handleConfirm = () => {
-    onConfirm();
-    onClose();
+  const positions = ['Chef', 'Waiter', 'Waitress', 'Cashier'];
+  const gender = ['Male', 'Female', 'Other'];
+
+  useEffect(() => {
+    setEmployee({ ...selectedEmployee });
+  }, [selectedEmployee]);
+
+  const handleConfirm = async () => {
+    try {
+      const url = `/api/employee/deleteEmployee/${employee._id}`;
+      await axiosInstance.delete(url);
+      console.log(`DEL request URL: ${url}`);
+      onConfirm();
+      onClose();
+    } catch (error) {
+      console.error('Error deleting employee:', error);
+    }
   };
 
   const handleCancel = () => {
+    setEmployee({ ...selectedEmployee });
     onClose();
   };
 
@@ -44,11 +60,13 @@ const DeleteEmployee = ({ selectedEmployee, onClose, onConfirm }) => {
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   value={employee.position}
                   readOnly
-                  >
-                    <option value="Chef">Chef</option>
-                    <option value="Waiter">Waiter</option>
-                    <option value="Waitress">Waitress</option>
-                  </select>
+                >
+                  {positions.map((position) => (
+                    <option key={position} value={position}>
+                      {position}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -98,16 +116,13 @@ const DeleteEmployee = ({ selectedEmployee, onClose, onConfirm }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Gender</label>
-                <select
+                <input
+                  type="text"
                   name="gender"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   value={employee.gender}
-                  disabled
-                >
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
+                  readOnly
+                />
               </div>
             </div>
             <div className="grid grid-cols-1">
