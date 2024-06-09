@@ -26,11 +26,11 @@ function AllEmployee() {
     }
   };
 
+  console.log(employees);
+
   useEffect(() => {
     fetchEmployees();
   }, []);
-
-  console.log(employees);
 
   const handleCardClick = (employee) => {
     setSelectedEmployee(employee);
@@ -60,7 +60,7 @@ function AllEmployee() {
       employee.employeeID.startsWith(searchTerm) ||
       employee.firstName.toLowerCase().startsWith(searchTerm.toLowerCase()) ||
       employee.lastName.toLowerCase().startsWith(searchTerm.toLowerCase()) ||
-      employee.position.toLowerCase().startsWith(searchTerm.toLowerCase())
+      employee.position.position.toLowerCase().startsWith(searchTerm.toLowerCase())
   );
 
   if (loading) {
@@ -100,9 +100,41 @@ function AllEmployee() {
 
         <div className="flex flex-col p-5">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {/* {employees.map((item, index) => (
-              <EmployeeCard key={index} {...item} onClick={() => handleCardClick(item)} />
-            ))} */}
+            {searchTerm ? (
+              filteredEmployees.map((item, index) => (
+                <div key={index} className="p-5 bg-white border border-gray-200 rounded-2xl shadow-sm cursor-pointer" onClick={() => handleCardClick(item)}>
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-lg font-semibold">{item.firstName} {item.lastName}</h3>
+                  </div>
+                  <p className="text-gray-700 mb-3">{item.position.position}</p>
+                  <div className="flex items-center mb-2">
+                    <MdEmail className="text-gray-500 mr-2" />
+                    <p className="text-gray-700">{item.email}</p>
+                  </div>
+                  <div className="flex items-center">
+                    <FaPhoneVolume className="text-gray-500 mr-2" />
+                    <p className="text-gray-700">{item.phone}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              employees.map((item, index) => (
+                <div key={index} className="p-5 bg-white border border-gray-200 rounded-2xl shadow-sm cursor-pointer" onClick={() => handleCardClick(item)}>
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-lg font-semibold">{item.firstName} {item.lastName}</h3>
+                  </div>
+                  <p className="text-gray-700 mb-3">{item.position.position}</p>
+                  <div className="flex items-center mb-2">
+                    <MdEmail className="text-gray-500 mr-2" />
+                    <p className="text-gray-700">{item.email}</p>
+                  </div>
+                  <div className="flex items-center">
+                    <FaPhoneVolume className="text-gray-500 mr-2" />
+                    <p className="text-gray-700">{item.phone}</p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -117,22 +149,5 @@ function AllEmployee() {
     </>
   );
 }
-
-// const EmployeeCard = ({ firstName, lastName, position, email, phone, onClick }) => (
-//   <div className="p-5 bg-white border border-gray-200 rounded-2xl shadow-sm cursor-pointer" onClick={onClick}>
-//     <div className="flex justify-between items-center mb-3">
-//       <h3 className="text-lg font-semibold">{firstName} {lastName}</h3>
-//     </div>
-//     <p className="text-gray-700 mb-3">{position}</p>
-//     <div className="flex items-center mb-2">
-//       <MdEmail className="text-gray-500 mr-2" />
-//       <p className="text-gray-700">{email}</p>
-//     </div>
-//     <div className="flex items-center">
-//       <FaPhoneVolume className="text-gray-500 mr-2" />
-//       <p className="text-gray-700">{phone}</p>
-//     </div>
-//   </div>
-// );
 
 export default AllEmployee;
