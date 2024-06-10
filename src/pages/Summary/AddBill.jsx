@@ -1,3 +1,7 @@
+import { IoMdCloseCircle } from "react-icons/io";
+import { axiosInstance } from "../../lib/axiosInstance";
+import React, { useState, useEffect } from 'react';
+
 const addBill = async (req, res) => {
   try {
       const {
@@ -41,9 +45,7 @@ const addBill = async (req, res) => {
   } catch (error) {
       res.status(500).send(error.message);
   }
-};                                                                                                                                                                                  import React, { useState, useEffect } from 'react';
-import { IoMdCloseCircle } from "react-icons/io";
-import { axiosInstance } from "../../lib/axiosInstance";
+};                                                  
 
 let billCounter = 1;
 

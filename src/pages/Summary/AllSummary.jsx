@@ -114,7 +114,6 @@ function Summary() {
               <div className="flex space-x-4">
                 <Input type="date" className="p-2 border border-gray-300 rounded-md" onChange={handleDateChange} value={selectedDate}/>
                 <Button className="bg-amber-300 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-full w-32" onClick={handleClickCreate}>Add</Button>        
-                <Button className="bg-red-300 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-full w-32">Delete</Button>
                 {createBill && (
                   <CreateBill onClose={closeModal} onSave={handleSaveBill} />
                 )}
