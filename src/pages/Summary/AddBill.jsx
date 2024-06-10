@@ -1,144 +1,99 @@
+import React, { useState, useEffect } from 'react';
 import { IoMdCloseCircle } from "react-icons/io";
 import { axiosInstance } from "../../lib/axiosInstance";
-import React, { useState, useEffect } from 'react';
-
-const addBill = async (req, res) => {
-  try {
-      const {
-          billNumber,
-          date,
-          totalCosteEachBill,
-          totalAmount,
-          menuitem
-      } = req.body;
-
-      const menuItemsWithDetails = await Promise.all(menuitem.map(async item => {
-          const menuDetails = await MenuModel.findById(item.menu);
-          if (!menuDetails) {
-              throw new Error(`Menu item with ID ${item.menu} not found`);
-          }
-          return {
-              menu: item.menu,
-              menuCategory: menuDetails.menuCategory,
-              qty: item.qty,
-              price: menuDetails.price,
-              cost: menuDetails.cost,
-              amount: item.qty * menuDetails.price
-          };
-      }));
-
-      const newBill = new SummaryModel({
-          billNumber,
-          date,
-          totalCosteEachBill,
-          totalAmount,
-          menuitem: menuItemsWithDetails
-      });
-
-      await newBill.save();
-
-      res.status(201).json({
-          message: 'Bill added successfully',
-          bill: newBill,
-      });
-
-  } catch (error) {
-      res.status(500).send(error.message);
-  }
-};                                                  
 
 let billCounter = 1;
 
 const CreateBill = ({ onClose, onSave }) => {
-const [selectedMenu, setSelectedMenu] = useState(null);
-const [qty, setQty] = useState(1);
-const [billItems, setBillItems] = useState([]);
-const [billNumber, setBillNumber] = useState(billCounter);
-const [currentDate, setCurrentDate] = useState('');
-const [menus, setMenus] = useState([]);
-const [searchTerm, setSearchTerm] = useState('');
+  const [selectedMenu, setSelectedMenu] = useState(null);
+  const [qty, setQty] = useState(1);
+  const [billItems, setBillItems] = useState([]);
+  const [billNumber, setBillNumber] = useState(billCounter);
+  const [currentDate, setCurrentDate] = useState('');
+  const [menus, setMenus] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
-const fetchMenu = async () => {
-  try {
-    const response = await axiosInstance.get('/api/menu/allMenu');
-    setMenus(response.data);
-  } catch (error) {
-    console.error('Error getting menus:', error);
-  }
-};
+  const fetchMenu = async () => {
+    try {
+      const response = await axiosInstance.get('/api/menu/allMenu');
+      setMenus(response.data);
+    } catch (error) {
+      console.error('Error getting menus:', error);
+    }
+  };
 
-useEffect(() => {
-  setCurrentDate(new Date().toLocaleDateString());
-  fetchMenu();
-}, []);
+  useEffect(() => {
+    setCurrentDate(new Date().toLocaleDateString());
+    fetchMenu();
+  }, []);
 
-const handleSearchChange = (e) => {
-  setSearchTerm(e.target.value);
-};
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
 
-const handleMenuChange = (e) => {
-  const menuItemId = (e.target.value);
-  const menuItem = menus.find((item) => item._id === menuItemId);
-  setSelectedMenu(menuItem);
-};
+  const handleMenuChange = (e) => {
+    const menuItemId = e.target.value;
+    const menuItem = menus.find((item) => item._id === menuItemId);
+    setSelectedMenu(menuItem);
+  };
 
-const handleQtyChange = (e) => {
-  setQty(parseInt(e.target.value));
-};
+  const handleQtyChange = (e) => {
+    setQty(parseInt(e.target.value));
+  };
 
-const handleAddItem = () => {
-  if (selectedMenu && qty > 0) {
-    setBillItems([...billItems, { ...selectedMenu, qty }]);
-    setSelectedMenu(null);
-    setQty(1);
-    setSearchTerm('');
-  } else {
-    console.error('Invalid selected menu or quantity');
-  }
-};
+  const handleAddItem = () => {
+    if (selectedMenu && qty > 0) {
+      setBillItems([...billItems, { ...selectedMenu, qty }]);
+      setSelectedMenu(null);
+      setQty(1);
+      setSearchTerm('');
+    } else {
+      console.error('Invalid selected menu or quantity');
+    }
+  };
 
-const calculateTotalAmount = () => {
-  return billItems.reduce((total, item) => total + (item.price * item.qty), 0).toFixed(2);
-};
+  const calculateTotalAmount = () => {
+    return billItems.reduce((total, item) => total + (item.price * item.qty), 0).toFixed(2);
+  };
 
-const calculateTotalCost = () => {
-  return billItems.reduce((total, item) => total + (item.cost * item.qty), 0).toFixed(2);
-};
+  const calculateTotalCost = () => {
+    return billItems.reduce((total, item) => total + (item.cost * item.qty), 0).toFixed(2);
+  };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    await axiosInstance.post('/api/summary/addBill', {
-      billNumber,
-      date: currentDate,
-      totalCost: calculateTotalCost(),
-      totalAmount: calculateTotalAmount(),
-      menuitem: billItems.map(item => ({
-        menu: item.id,
-        qty: item.qty
-      }))
-    });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axiosInstance.post('/api/summary/addBill', {
+        billNumber,
+        date: currentDate,
+        totalCosteEachBill: calculateTotalCost(),
+        totalAmount: calculateTotalAmount(),
+        menuitem: billItems.map(item => ({
+          menu: item._id, // ใช้ _id แทน id
+          qty: item.qty
+        }))
+      });
 
-    onSave({
-      billNumber,
-      date: currentDate,
-      totalCost: calculateTotalCost(),
-      totalAmount: calculateTotalAmount(),
-    });
+      onSave({
+        billNumber,
+        date: currentDate,
+        totalCost: calculateTotalCost(),
+        totalAmount: calculateTotalAmount(),
+      });
 
-    billCounter += 1;
-    onClose();
-  } catch (error) {
-    console.error('Error creating bill:', error);
-  }
-};
+      billCounter += 1;
+      onClose();
+    } catch (error) {
+      console.error('Error creating bill:', error);
+    }
+  };
 
-const filteredMenus = menus.filter(menu => 
-  menu.menuName.toLowerCase().includes(searchTerm.toLowerCase())
-);
+  const filteredMenus = menus.filter(menu =>
+    menu.menuName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-return (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
     <div className="relative bg-white p-5 border-gray-200 rounded-2xl shadow-sm w-11/12 md:w-6/12 lg:w-6/12 h-auto">
       <div className="flex justify-center items-center">
         <h3 className="text-2xl font-bold">Add New Bill</h3>
@@ -258,7 +213,7 @@ return (
       </button>
     </div>
   </div>
-);
+  );
 };
 
 export default CreateBill;
