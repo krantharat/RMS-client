@@ -1,8 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IoMdCloseCircle } from "react-icons/io";
+import { axiosInstance } from '../../lib/axiosInstance';
 
 const DeleteIngredient = ({ selectedIngredient, onClose, onConfirm }) => {
-  const [ingredient] = useState(selectedIngredient);
+  const [ingredient, setIngredient] = useState(selectedIngredient);
+
+  useEffect(() => {
+    const fetchIngredientDetail = async () => {
+      try {
+        const response = await axiosInstance.get(`/api/stock/searchIngredient?name=${selectedIngredient.ingredientName}`);
+        setIngredient(response.data);
+      } catch (err) {
+        console.error('Error fetching ingredient details:', err);
+      }
+    };
+    fetchIngredientDetail();
+  }, [selectedIngredient]);
 
   const handleConfirm = () => {
     onConfirm();
@@ -30,40 +43,34 @@ const DeleteIngredient = ({ selectedIngredient, onClose, onConfirm }) => {
                 <label className="block text-sm font-medium text-gray-700">Name</label>
                 <input
                   type="text"
-                  name="name"
+                  name="ingredientName"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                  value={ingredient.name}
+                  value={ingredient.ingredientName}
                   readOnly
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Position</label>
-                <select
-                  name="category"
+                <label className="block text-sm font-medium text-gray-700">Category</label>
+                <input
+                  type="text"
+                  name="ingredientCategory"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                  value={ingredient.category}
-                  disabled
-                >
-                  <option value="Meat">Meat</option>
-                  <option value="Fruit">Fruit</option>
-                  <option value="Seafood">Seafood</option>
-                </select>
+                  value={ingredient.ingredientCategory}
+                  readOnly
+                />
               </div>  
               <div>
-                <label className="block text-sm font-medium text-gray-700">Position</label>
-                <select
-                  name="uom"
+                <label className="block text-sm font-medium text-gray-700">Unit of Measure</label>
+                <input
+                  type="text"
+                  name="uomType"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                  value={ingredient.ingredientUOM}
-                  disabled
-                >
-                  <option value="kg">kg</option>
-                  <option value="l">l</option>
-                  <option value="ml">ml</option>
-                </select>
+                  value={ingredient.uomType}
+                  readOnly
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <label className="block text-sm font-medium text-gray-700">Cost</label>
                 <input
                   type="text"
                   name="cost"
@@ -73,22 +80,12 @@ const DeleteIngredient = ({ selectedIngredient, onClose, onConfirm }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <label className="block text-sm font-medium text-gray-700">Low Amount of Ingredients</label>
                 <input
                   type="text"
-                  name="price"
+                  name="notiAmount"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                  value={ingredient.price}
-                  readOnly
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Name</label>
-                <input
-                  type="text"
-                  name="Low amount of ingredients"
-                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                  value={ingredient.lowAmount}
+                  value={ingredient.notiAmount}
                   readOnly
                 />
               </div>

@@ -41,12 +41,17 @@ function AllStock() {
     setCreateIngredient(false);
   };
 
-  const handleDeleteIngredient = () => {
-    console.log("Ingredient deleted:", selectedIngredient);
-    setIngredients(
-      ingredients.filter((ingredient) => ingredient !== selectedIngredient)
-    );
-    setSelectedIngredient(null);
+  const handleDeleteIngredient = async () => {
+    try {
+      await axiosInstance.delete(`/api/stock/deleteIngredient/${selectedIngredient._id}`);
+      console.log("Ingredient deleted:", selectedIngredient);
+      setIngredients(
+        ingredients.filter((ingredient) => ingredient._id !== selectedIngredient._id)
+      );
+      setSelectedIngredient(null);
+    } catch (error) {
+      console.error("Error deleting ingredient:", error);
+    }
   };
 
   const handleSearchChange = (e) => {
@@ -65,7 +70,7 @@ function AllStock() {
 
   const handleUpdateClick = () => {
     if (isUpdateMode) {
-      UpdateIngredient();
+      updateIngredientQuantities();
     }
     setIsUpdateMode(!isUpdateMode);
   };
@@ -77,7 +82,7 @@ function AllStock() {
     });
   };
 
-  const UpdateIngredient = async () => {
+  const updateIngredientQuantities = async () => {
     try {
       const updatedIngredients = selectedIngredients.map((ingredient) => ({
         ...ingredient,
@@ -95,7 +100,7 @@ function AllStock() {
       setIngredients((prevIngredients) =>
         prevIngredients.map((ingredient) =>
           updateQuantities[ingredient._id]
-            ? { ...ingredient, inStock: updateQuantities[ingredient._id] }
+            ? { ...ingredient, inStock: updateQuantities[ingredient._id], date: new Date() }
             : ingredient
         )
       );
@@ -223,7 +228,7 @@ const IngredientRow = ({
 
   const formatDate = (date) => {
     try {
-      return format(new Date(date), 'dd MMMM yyyy, hh:mm a');
+      return format(new Date(date), 'dd MMMM yyyy');
     } catch (error) {
       console.error('Invalid date format:', date);
       return 'Invalid Date';
