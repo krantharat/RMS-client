@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../components/header";
 import { Card, Typography, Button, Input } from "@material-tailwind/react";
 import CreateBill from './AddBill';
 import ViewBill from './ViewBill';
+import { axiosInstance } from "../../lib/axiosInstance";
 import { axiosInstance } from "../../lib/axiosInstance";
 
 function Summary() {
@@ -11,6 +13,7 @@ function Summary() {
   const [selectedBill, setSelectedBill] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(new Date().toLocaleDateString());
 
   const fetchBills = async () => {
     try {
@@ -77,11 +80,15 @@ function Summary() {
     return <p>No bills available</p>;
   }
 
+  const handleDateChange = (e) => {
+    setSelectedDate(e.target.value);
+  };
+
   return (
     <>
       <div className="flex flex-col w-full">
         <Header title="Summary" />
-        <h1 className='text-6xl text-black text-left font-bold ml-20 mt-10'>06 JUNE, 2024</h1>
+        <h1 className='text-6xl text-black text-left font-bold ml-20 mt-10'>{selectedDate}</h1>
         <div className='flex justify-start space-x-10 mt-10 ml-20'>
           <div className='p-6 bg-white rounded-xl flex items-center h-40 w-90'>
             <div>
@@ -105,9 +112,9 @@ function Summary() {
         <div className="mt-10 mx-20 flex justify-center">
           <Card className="w-full p-6">
             <div className="flex justify-between items-center mb-6">
-              <Typography className="text-5xl font-bold">Orders</Typography>
+              <Typography className="text-5xl font-bold">Orders</Typography>  
               <div className="flex space-x-4">
-                <Input type="date" className="p-2 border border-gray-300 rounded-md"/>
+                <Input type="date" className="p-2 border border-gray-300 rounded-md" onChange={handleDateChange} value={selectedDate}/>
                 <Button className="bg-amber-300 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-full w-32" onClick={handleClickCreate}>Add</Button>        
                 <Button className="bg-red-300 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-full w-32">Delete</Button>
                 {createBill && (

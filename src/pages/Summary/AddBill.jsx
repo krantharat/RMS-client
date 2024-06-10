@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IoMdCloseCircle } from "react-icons/io";
 import { axiosInstance } from "../../lib/axiosInstance";
+import { axiosInstance } from "../../lib/axiosInstance";
 
 let billCounter = 1;
 
@@ -24,7 +25,12 @@ const CreateBill = ({ onClose, onSave }) => {
   useEffect(() => {
     setCurrentDate(new Date().toLocaleDateString());
     fetchMenu();
+    fetchMenu();
   }, []);
+
+  // const handleSearchChange = (e) => {
+  //   setSearchTerm(e.target.value);
+  // };
 
   const handleMenuChange = (e) => {
     console.log('handleMenuChange is called');
@@ -66,6 +72,7 @@ const CreateBill = ({ onClose, onSave }) => {
   };
 
   const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await axiosInstance.post('/api/summary/addBill', {
@@ -89,7 +96,6 @@ const CreateBill = ({ onClose, onSave }) => {
         totalCost: calculateTotalCost(),
         totalAmount: calculateTotalAmount(),
       });
-
       billCounter += 1;
       onClose();
     } catch (error) {
@@ -130,6 +136,7 @@ const CreateBill = ({ onClose, onSave }) => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
+                <label className="block text-sm font-medium text-gray-700">Select Menu</label>
                 <label className="block text-sm font-medium text-gray-700">Select Menu</label>
                 <select
                   name="menu"
@@ -185,7 +192,10 @@ const CreateBill = ({ onClose, onSave }) => {
                     <tr key={index}>
                       <td className="border p-2">{item.menuName}</td>
                       <td className="border p-2">{item.menuCategory}</td>
+                      <td className="border p-2">{item.menuName}</td>
+                      <td className="border p-2">{item.menuCategory}</td>
                       <td className="border p-2">{item.price.toFixed(2)} ฿</td>
+                      <td className="border p-2">{(item.cost * item.qty).toFixed(2)} ฿</td>
                       <td className="border p-2">{(item.cost * item.qty).toFixed(2)} ฿</td>
                       <td className="border p-2">{item.qty}</td>
                       <td className="border p-2">{(item.price * item.qty).toFixed(2)} ฿</td>
@@ -223,4 +233,5 @@ const CreateBill = ({ onClose, onSave }) => {
 };
 
 export default CreateBill;
+
 
