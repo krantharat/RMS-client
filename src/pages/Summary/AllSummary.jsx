@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
-import React, { useState, useEffect } from "react";
 import Header from "../../components/header";
 import { Card, Typography, Button, Input } from "@material-tailwind/react";
 import CreateBill from './AddBill';
 import ViewBill from './ViewBill';
-import { axiosInstance } from "../../lib/axiosInstance";
 import { axiosInstance } from "../../lib/axiosInstance";
 
 function Summary() {
