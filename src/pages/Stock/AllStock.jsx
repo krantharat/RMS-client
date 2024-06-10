@@ -6,10 +6,9 @@ import CreateIngredient from "./CreateIngredientDetail";
 import ViewIngredientDetail from "./ViewIngredientDetail";
 
 function AllStock() {
-  const [ingredients, setIngredients] = useState([]);
+  const [currentDate, setCurrentDate] = useState("");
   const [selectedIngredient, setSelectedIngredient] = useState(null);
   const [createIngredient, setCreateIngredient] = useState(false);
-  const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   // const [currentDate, setCurrentDate] = useState("");
 
@@ -25,15 +24,20 @@ function AllStock() {
   console.log(ingredients);
 
   useEffect(() => {
-    fetchIngredient();
+    const today = new Date().toISOString().split("T")[0];
+    setCurrentDate(today);
   }, []);
+
+  const handleClickCreate = () => {
+    setCreateIngredient(true);
+  };
 
   const handleViewIngredient = (ingredient) => {
     setSelectedIngredient(ingredient);
   };
 
-  const handleClickCreate = () => {
-    setCreateIngredient(true);
+  const handleClose = () => {
+    setSelectedIngredient(null);
   };
 
   const closeModal = () => {
@@ -42,10 +46,7 @@ function AllStock() {
   };
 
   const handleDeleteIngredient = () => {
-    console.log("Ingredient deleted:", selectedIngredient);
-    setIngredients(
-      ingredients.filter((ingredient) => ingredient !== selectedIngredient)
-    );
+    setIngredients(ingredients.filter(ingredient => ingredient !== selectedIngredient));
     setSelectedIngredient(null);
   };
 
@@ -94,6 +95,7 @@ function AllStock() {
               >
                 Create
               </button>
+
               <button
                 type="button"
                 className="w-24 bg-green-500 text-white font-medium capitalize border-0 rounded-3xl p-2 hover:bg-green-600 transition duration-300 mt-2 md:mt-0"
@@ -109,7 +111,7 @@ function AllStock() {
           <table className="min-w-full bg-white border border-gray-200 shadow-sm">
             <thead>
               <tr>
-                <th className="py-2 px-3 border-b text-center">Select</th>
+                {isUpdateMode && <th className="py-2 px-3 border-b text-center">Select</th>}
                 <th className="py-2 px-3 border-b">Ingredient</th>
                 <th className="py-2 px-3 border-b">Category</th>
                 <th className="py-2 px-3 border-b text-center">Date</th>
@@ -133,14 +135,16 @@ function AllStock() {
       </div>
 
       {selectedIngredient && (
-        <ViewIngredientDetail
-          selectedIngredient={selectedIngredient}
-          onClose={closeModal}
+        <ViewIngredientDetail 
+          selectedIngredient={selectedIngredient} 
+          onClose={handleClose} 
           onConfirmDelete={handleDeleteIngredient}
         />
       )}
 
-      {createIngredient && <CreateIngredient onClose={closeModal} />}
+      {createIngredient && (
+        <CreateIngredient onClose={closeModal} onSave={handleSaveIngredient} />
+      )}
     </>
   );
 }

@@ -1,102 +1,97 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { IoMdCloseCircle } from "react-icons/io";
-import { axiosInstance } from "../../lib/axiosInstance";
 
 const DeleteIngredient = ({ selectedIngredient, onClose, onConfirm }) => {
-  const [ingredient, setIngredient] = useState({ ...selectedIngredient });
+  const [ingredient] = useState(selectedIngredient);
 
-  const uomType = ['g', 'kg', 'ml', 'l', 'pack'];
-  const ingredientCategory = ['meat', 'seafood', 'fruit', 'vegetable'];
-
-  useEffect(() => {
-    setIngredient({ ...selectedIngredient });
-  }, [selectedIngredient]);
-
-  const handleConfirm = async () => {
-    try {
-      const url = `/api/stock/deleteIngredient/${ingredient._id}`;
-      await axiosInstance.delete(url);
-      console.log(`DEL request URL: ${url}`);
-      onConfirm();
-      onClose();
-    } catch (error) {
-      console.error('Error deleting ingredient:', error);
-    }
-  };
-
-  const handleCancel = () => {
-    setIngredient({ ...selectedIngredient });
+  const handleConfirm = () => {
+    onConfirm();
     onClose();
   };
 
+  const handleCancel = () => {
+    onClose();
+  };
+
+  const closeModal = () => {
+    onClose();
+    window.location.href = '/Stock';
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="relative bg-white p-5 border-gray-200 rounded-2xl shadow-sm w-11/12 md:w-6/12 lg:w-6/12 h-auto">
         <div className="flex justify-center items-center">
           <h3 className="text-2xl font-bold">Are you sure you want to delete this ingredient?</h3>
         </div>
         <div className="p-5 bg-white h-96 overflow-y-auto border border-gray-300 mt-3">
-          <form className="grid grid-cols-1 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Name</label>
-              <input
-                type="text"
-                name="ingredientName"
-                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={ingredient.ingredientName}
-                readOnly
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Category</label>
-              <select
-                name="ingredientCategory"
-                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={ingredient.ingredientCategory}
-                disabled
-              >
-                {ingredientCategory.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Unit of Measure</label>
-              <select
-                name="uomType"
-                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={ingredient.uomType}
-                disabled
-              >
-                {uomType.map((uom) => (
-                  <option key={uom} value={uom}>
-                    {uom}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Cost</label>
-              <input
-                type="number"
-                name="cost"
-                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={ingredient.cost}
-                readOnly
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Low Amount of Ingredients</label>
-              <input
-                type="number"
-                name="notiAmount"
-                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={ingredient.notiAmount}
-                readOnly
-              />
-            </div>
+            <form className="grid grid-cols-1 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                  value={ingredient.name}
+                  readOnly
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Position</label>
+                <select
+                  name="category"
+                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                  value={ingredient.category}
+                  disabled
+                >
+                  <option value="Meat">Meat</option>
+                  <option value="Fruit">Fruit</option>
+                  <option value="Seafood">Seafood</option>
+                </select>
+              </div>  
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Position</label>
+                <select
+                  name="uom"
+                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                  value={ingredient.ingredientUOM}
+                  disabled
+                >
+                  <option value="kg">kg</option>
+                  <option value="l">l</option>
+                  <option value="ml">ml</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <input
+                  type="text"
+                  name="cost"
+                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                  value={ingredient.cost}
+                  readOnly
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <input
+                  type="text"
+                  name="price"
+                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                  value={ingredient.price}
+                  readOnly
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <input
+                  type="text"
+                  name="Low amount of ingredients"
+                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                  value={ingredient.lowAmount}
+                  readOnly
+                />
+              </div>
 
             <div className="flex flex-col">
               <div className='flex justify-center mt-2'>
@@ -120,7 +115,7 @@ const DeleteIngredient = ({ selectedIngredient, onClose, onConfirm }) => {
         </div>
         <button
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition duration-300"
-          onClick={onClose}
+          onClick={closeModal}
         >
           <IoMdCloseCircle className="size-7 text-red-500 cursor-pointer hover:text-red-700 transition duration-300 mr-1.5 mt-1" />
         </button>

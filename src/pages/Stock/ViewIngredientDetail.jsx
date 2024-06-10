@@ -1,20 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FaEdit } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
 import DeleteIngredient from './DeleteIngredient';
-import { axiosInstance } from "../../lib/axiosInstance";
 
 const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) => {
   const [isEditable, setIsEditable] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   const [ingredient, setIngredient] = useState({ ...selectedIngredient });
-
-  const uomType = ['g', 'kg', 'ml', 'l', 'pack'];
-  const ingredientCategory = ['meat', 'seafood', 'fruit', 'vegetable'];
-
-  useEffect(() => {
-    setIngredient({ ...selectedIngredient });
-  }, [selectedIngredient]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,7 +16,6 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
     }));
   };
 
-
   const handleEditClick = () => {
     setIsEditable(true);
   };
@@ -33,18 +24,11 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
     setIsDelete(true);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const url = `/api/stock/editIngredient/${ingredient._id}`;
-      await axiosInstance.put(url, ingredient);
-      setIsEditable(false);
-      onClose();
-    } catch (error) {
-      console.error('Error updating ingredient:', error);
-    }
-};
-
+    setIsEditable(false);
+    onClose();
+  };
 
   const handleCancel = () => {
     setIngredient({ ...selectedIngredient });
@@ -74,9 +58,9 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
               <label className="block text-sm font-medium text-gray-700">Name</label>
               <input
                 type="text"
-                name="ingredientName"
+                name="name"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={ingredient.ingredientName}
+                value={ingredient.name}
                 onChange={handleChange}
                 readOnly={!isEditable}
               />
@@ -84,41 +68,35 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
             <div>
               <label className="block text-sm font-medium text-gray-700">Category</label>
               <select
-                name="ingredientCategory"
+                name="category"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={ingredient.ingredientCategory}
+                value={ingredient.category}
                 onChange={handleChange}
                 disabled={!isEditable}
               >
-                {ingredientCategory.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
+                <option value="Meat">Meat</option>
+                <option value="Fruit">Fruit</option>
+                <option value="Seafood">Seafood</option>
               </select>
-
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Unit of Measure</label>
               <select
-                name="uomType"
+                name="uom"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={ingredient.uomType}
+                value={ingredient.uom}
                 onChange={handleChange}
                 disabled={!isEditable}
               >
-                {uomType.map((uom) => (
-                  <option key={uom} value={uom}>
-                    {uom}
-                  </option>
-                ))}
+                <option value="kg">kg</option>
+                <option value="l">l</option>
+                <option value="ml">ml</option>
               </select>
-
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Cost</label>
               <input
-                type="number"
+                type="text"
                 name="cost"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                 value={ingredient.cost}
@@ -127,12 +105,23 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
               />
             </div>
             <div>
+              <label className="block text-sm font-medium text-gray-700">Price</label>
+              <input
+                type="text"
+                name="price"
+                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
+                value={ingredient.price}
+                onChange={handleChange}
+                readOnly={!isEditable}
+              />
+            </div>
+            <div>
               <label className="block text-sm font-medium text-gray-700">Low Amount of Ingredients</label>
               <input
-                type="number"
-                name="notiAmount"
+                type="text"
+                name="lowAmount"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={ingredient.notiAmount}
+                value={ingredient.lowAmount}
                 onChange={handleChange}
                 readOnly={!isEditable}
               />
