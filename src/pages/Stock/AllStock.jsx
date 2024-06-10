@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Header from "../../components/header";
 import { FaEdit } from "react-icons/fa";
 import { axiosInstance } from "../../lib/axiosInstance";
-import { format } from 'date-fns';
 import CreateIngredient from "./CreateIngredientDetail";
 import ViewIngredientDetail from "./ViewIngredientDetail";
 
@@ -12,8 +11,7 @@ function AllStock() {
   const [createIngredient, setCreateIngredient] = useState(false);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedIngredients, setSelectedIngredients] = useState([]);
-  const [updateQuantities, setUpdateQuantities] = useState({});
+  // const [currentDate, setCurrentDate] = useState("");
 
   const fetchIngredient = async () => {
     try {
@@ -23,6 +21,8 @@ function AllStock() {
       console.error("Error getting ingredients:", error);
     }
   };
+
+  console.log(ingredients);
 
   useEffect(() => {
     fetchIngredient();
@@ -53,59 +53,9 @@ function AllStock() {
     setSearchTerm(e.target.value);
   };
 
-  const handleCheckboxChange = (ingredient) => {
-    setSelectedIngredients((prevSelected) => {
-      if (prevSelected.includes(ingredient)) {
-        return prevSelected.filter((item) => item !== ingredient);
-      } else {
-        return [...prevSelected, ingredient];
-      }
-    });
-  };
-
-  const handleUpdateClick = () => {
-    if (isUpdateMode) {
-      UpdateIngredient();
-    }
-    setIsUpdateMode(!isUpdateMode);
-  };
-
-  const handleQuantityChange = (ingredient, quantity) => {
-    setUpdateQuantities({
-      ...updateQuantities,
-      [ingredient._id]: quantity,
-    });
-  };
-
-  const UpdateIngredient = async () => {
-    try {
-      const updatedIngredients = selectedIngredients.map((ingredient) => ({
-        ...ingredient,
-        inStock: updateQuantities[ingredient._id],
-      }));
-
-      await Promise.all(
-        updatedIngredients.map((ingredient) =>
-          axiosInstance.put(`/api/stock/updateIngredient/${ingredient._id}`, {
-            inStock: ingredient.inStock,
-          })
-        )
-      );
-
-      setIngredients((prevIngredients) =>
-        prevIngredients.map((ingredient) =>
-          updateQuantities[ingredient._id]
-            ? { ...ingredient, inStock: updateQuantities[ingredient._id] }
-            : ingredient
-        )
-      );
-      setSelectedIngredients([]);
-      setUpdateQuantities({});
-      setIsUpdateMode(false);
-    } catch (error) {
-      console.error("Error updating ingredients:", error);
-    }
-  };
+  // const handleDateChange = (e) => {
+  //   setCurrentDate(e.target.value);
+  // };
 
   const filteredIngredients = ingredients.filter((ingredient) =>
     ingredient.ingredientName.toLowerCase().startsWith(searchTerm.toLowerCase())
@@ -118,7 +68,17 @@ function AllStock() {
 
         <div>
           <form className="flex flex-wrap justify-between items-center">
-            <div className="flex items-center ml-5"></div>
+            <div className="flex items-center ml-5">
+              {/* <h2 className="text-xl font-medium">
+                The data on
+                <input
+                  type="date"
+                  className="w-52 bg-transparent focus:outline-none text-3xl font-semibold ml-5"
+                  value={date}
+                  onChange={handleDateChange}
+                />
+              </h2> */}
+            </div>
             <div className="flex flex-wrap items-center space-x-3 mr-5 ml-5 mt-2 md:mt-0">
               <input
                 type="text"
@@ -137,9 +97,9 @@ function AllStock() {
               <button
                 type="button"
                 className="w-24 bg-green-500 text-white font-medium capitalize border-0 rounded-3xl p-2 hover:bg-green-600 transition duration-300 mt-2 md:mt-0"
-                onClick={handleUpdateClick}
+                onClick={() => setIsUpdateMode(!isUpdateMode)}
               >
-                {isUpdateMode ? "Save" : "Update"}
+                Update
               </button>
             </div>
           </form>
@@ -156,6 +116,7 @@ function AllStock() {
                 <th className="py-2 px-3 border-b text-center">In Stock</th>
                 <th className="py-2 px-3 border-b text-center">UOM</th>
                 <th className="py-2 px-3 border-b text-center">Cost</th>
+                {/* <th className="py-2 px-3 border-b text-center">Edit</th> */}
               </tr>
             </thead>
             <tbody>
@@ -164,11 +125,6 @@ function AllStock() {
                   key={index}
                   ingredient={ingredient}
                   onClickEdit={() => handleViewIngredient(ingredient)}
-                  onCheckboxChange={handleCheckboxChange}
-                  isSelected={selectedIngredients.includes(ingredient)}
-                  isUpdateMode={isUpdateMode}
-                  onQuantityChange={handleQuantityChange}
-                  updateQuantities={updateQuantities}
                 />
               ))}
             </tbody>
@@ -189,25 +145,8 @@ function AllStock() {
   );
 }
 
-const IngredientRow = ({
-  ingredient,
-  onClickEdit,
-  onCheckboxChange,
-  isSelected,
-  isUpdateMode,
-  onQuantityChange,
-  updateQuantities,
-}) => {
-  const {
-    _id,
-    ingredientName,
-    ingredientCategory,
-    date,
-    inStock,
-    uomType,
-    cost,
-    notiAmount,
-  } = ingredient;
+const IngredientRow = ({ ingredient, onClickEdit }) => {
+  const { ingredientName, ingredientCategory, date, inStock, uomType, cost, notiAmount } = ingredient;
 
   const getStockClass = () => {
     if (inStock === "0") {
@@ -224,40 +163,19 @@ const IngredientRow = ({
   return (
     <tr>
       <td className="py-2 px-3 border-b text-center">
-        <input
-          type="checkbox"
-          className="form-checkbox h-4 w-4 text-blue-600"
-          checked={isSelected}
-          onChange={() => onCheckboxChange(ingredient)}
-        />
+        <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-600" />
       </td>
-      <td
-        className={`py-2 px-3 border-b font-medium cursor-pointer ${getStockClass()}`}
-        onClick={onClickEdit}
-      >
+      <td className={`py-2 px-3 border-b font-medium cursor-pointer ${getStockClass()}`} onClick={onClickEdit}>
         {ingredientName}
       </td>
       <td className={`py-2 px-3 border-b font-medium ${getStockClass()}`}>
         {ingredientCategory}
       </td>
-      <td
-        className={`py-2 px-3 border-b font-medium text-center ${getStockClass()}`}
-      >
-        {format(new Date(date), 'dd MMMM yyyy')}
+      <td className={`py-2 px-3 border-b font-medium text-center ${getStockClass()}`}>
+        {date}
       </td>
-      <td
-        className={`py-2 px-3 border-b font-medium text-center ${getStockClass()}`}
-      >
-        {isUpdateMode ? (
-          <input
-            type="number"
-            className="w-20 ml-2 border text-center border-gray-300 rounded"
-            value={updateQuantities[_id] || inStock}
-            onChange={(e) => onQuantityChange(ingredient, e.target.value)}
-          />
-        ) : (
-          inStock
-        )}
+      <td className={`py-2 px-3 border-b font-medium text-center ${getStockClass()}`}>
+        {inStock}
       </td>
       <td className={`py-2 px-3 border-b font-medium text-center ${getStockClass()}`}>
         {uomType}
@@ -265,6 +183,14 @@ const IngredientRow = ({
       <td className={`py-2 px-3 border-b font-medium text-center ${getStockClass()}`}>
         {cost} THB
       </td>
+      {/* <td className="py-2 px-3 border-b text-center">
+        <div className="flex justify-center">
+          <FaEdit
+            className="text-gray-500 cursor-pointer hover:text-gray-700 transition duration-300"
+            onClick={onClickEdit}
+          />
+        </div>
+      </td> */}
     </tr>
   );
 };
