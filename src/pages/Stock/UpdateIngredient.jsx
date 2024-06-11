@@ -36,70 +36,63 @@ const UpdateIngredient = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="relative bg-white p-5 border-gray-200 rounded-2xl shadow-sm w-11/12 md:w-6/12 lg:w-6/12 h-auto">
-        <div className="flex justify-between items-center">
+        <div className="relative flex justify-center items-center">
           <h3 className="text-2xl font-bold">Update Ingredients</h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 transition duration-300">
+          <button onClick={onClose} className="absolute right-0 text-gray-500 hover:text-gray-700 transition duration-300">
             <IoMdCloseCircle className="size-7 text-red-500 cursor-pointer hover:text-red-700 transition duration-300" />
           </button>
         </div>
-        <div className="p-5 bg-white h-96 overflow-y-auto border border-gray-300 mt-3">
-          <table className="min-w-full bg-white border border-gray-200 shadow-sm">
-            <thead>
-              <tr>
-                <th className="py-2 px-3 border-b">Ingredient</th>
-                <th className="py-2 px-3 border-b">Category</th>
-                <th className="py-2 px-3 border-b text-center">Date</th>
-                <th className="py-2 px-3 border-b text-center">In Stock</th>
-                <th className="py-2 px-3 border-b text-center">UOM</th>
-                <th className="py-2 px-3 border-b text-center">Cost</th>
-              </tr>
-            </thead>
-            <tbody>
-              {selectedIngredients.map((ingredient) => (
-                <tr key={ingredient._id}>
-                  <td
-                    className={`py-2 px-3 border-b font-medium ${getStockClass(ingredient.inStock, ingredient.notiAmount)}`}
-                  >
-                    {ingredient.ingredientName}
-                  </td>
-                  <td
-                    className={`py-2 px-3 border-b font-medium ${getStockClass(ingredient.inStock, ingredient.notiAmount)}`}
-                  >
-                    {ingredient.ingredientCategory}
-                  </td>
-                  <td
-                    className={`py-2 px-3 border-b font-medium text-center ${getStockClass(ingredient.inStock, ingredient.notiAmount)}`}
-                  >
-                    {formatDate(ingredient.date)}
-                  </td>
-                  <td
-                    className={`py-2 px-3 border-b font-medium text-center ${getStockClass(ingredient.inStock, ingredient.notiAmount)}`}
-                  >
-                    <input
-                      type="number"
-                      min={0}
-                      className="w-20 ml-2 border text-center border-gray-300 rounded"
-                      value={updateQuantities[ingredient._id] || ingredient.inStock}
-                      onChange={(e) => onQuantityChange(ingredient, e.target.value)}
-                    />
-                  </td>
-                  
-                  <td
-                    className={`py-2 px-3 border-b font-medium text-center ${getStockClass(ingredient.inStock, ingredient.notiAmount)}`}
-                  >
-                    {ingredient.uomType}
-                  </td>
-                  <td
-                    className={`py-2 px-3 border-b font-medium text-center ${getStockClass(ingredient.inStock, ingredient.notiAmount)}`}
-                  >
-                    {ingredient.cost} THB
-                  </td>
+        <div className="p-5 bg-white h-96 overflow-y-auto mt-3">
+          {selectedIngredients.length === 0 ? (
+            <div className="flex justify-center items-center h-full border-2">
+              <div className="text-center text-red-500 font-semibold text-lg">No ingredient selected</div>
+            </div>
+          ) : (
+            <table className="min-w-full bg-white border border-gray-200 shadow-sm">
+              <thead>
+                <tr>
+                  <th className="py-2 px-3 border-b">Ingredient</th>
+                  <th className="py-2 px-3 border-b">Category</th>
+                  <th className="py-2 px-3 border-b text-center">Date</th>
+                  <th className="py-2 px-3 border-b text-center">In Stock</th>
+                  <th className="py-2 px-3 border-b text-center">UOM</th>
+                  <th className="py-2 px-3 border-b text-center">Cost</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {selectedIngredients.map((ingredient) => (
+                  <tr key={ingredient._id}>
+                    <td className={`py-2 px-3 border-b font-medium ${getStockClass(ingredient.inStock, ingredient.notiAmount)}`}>
+                      {ingredient.ingredientName}
+                    </td>
+                    <td className={`py-2 px-3 border-b font-medium ${getStockClass(ingredient.inStock, ingredient.notiAmount)}`}>
+                      {ingredient.ingredientCategory}
+                    </td>
+                    <td className={`py-2 px-3 border-b font-medium text-center ${getStockClass(ingredient.inStock, ingredient.notiAmount)}`}>
+                      {formatDate(ingredient.date)}
+                    </td>
+                    <td className={`py-2 px-3 border-b font-medium text-center ${getStockClass(ingredient.inStock, ingredient.notiAmount)}`}>
+                      <input
+                        type="number"
+                        min={0}
+                        className="w-20 ml-2 border text-center border-gray-300 rounded"
+                        value={updateQuantities[ingredient._id] || ingredient.inStock}
+                        onChange={(e) => onQuantityChange(ingredient, e.target.value)}
+                      />
+                    </td>
+                    <td className={`py-2 px-3 border-b font-medium text-center ${getStockClass(ingredient.inStock, ingredient.notiAmount)}`}>
+                      {ingredient.uomType}
+                    </td>
+                    <td className={`py-2 px-3 border-b font-medium text-center ${getStockClass(ingredient.inStock, ingredient.notiAmount)}`}>
+                      {ingredient.cost} THB
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
-        <div className="flex justify-center mt-2 p-4 border-t">
+        <div className="flex justify-center mt-2 p-4">
           <button
             onClick={handleUpdateClick}
             className="w-20 bg-green-500 text-white font-medium capitalize border-0 rounded-3xl p-2 hover:bg-green-700 transition duration-300"
