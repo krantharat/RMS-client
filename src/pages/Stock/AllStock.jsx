@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../components/header";
-import { FaEdit } from "react-icons/fa";
 import { axiosInstance } from "../../lib/axiosInstance";
 import { format } from 'date-fns';
 import CreateIngredient from "./CreateIngredientDetail";
 import ViewIngredientDetail from "./ViewIngredientDetail";
+import UpdateIngredient from './UpdateIngredient';
 
 function AllStock() {
   const [ingredients, setIngredients] = useState([]);
@@ -111,6 +111,7 @@ function AllStock() {
       console.error("Error updating ingredients:", error);
     }
   };
+  
 
   const filteredIngredients = ingredients.filter((ingredient) =>
     ingredient.ingredientName.toLowerCase().startsWith(searchTerm.toLowerCase())
@@ -142,9 +143,9 @@ function AllStock() {
               <button
                 type="button"
                 className="w-24 bg-green-500 text-white font-medium capitalize border-0 rounded-3xl p-2 hover:bg-green-600 transition duration-300 mt-2 md:mt-0"
-                onClick={handleUpdateClick}
+                onClick={() => setIsUpdateMode(true)}
               >
-                {isUpdateMode ? "Save" : "Update"}
+                Update
               </button>
             </div>
           </form>
@@ -190,6 +191,15 @@ function AllStock() {
       )}
 
       {createIngredient && <CreateIngredient onClose={closeModal} />}
+
+      <UpdateIngredient
+        isOpen={isUpdateMode}
+        onClose={() => setIsUpdateMode(false)}
+        selectedIngredients={selectedIngredients}
+        onQuantityChange={handleQuantityChange}
+        updateQuantities={updateQuantities}
+        handleUpdateClick={updateIngredientQuantities}
+      />
     </>
   );
 }
