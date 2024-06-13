@@ -10,7 +10,6 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
   const [employee, setEmployee] = useState({ ...selectedEmployee });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [serverError, setServerError] = useState(null);
 
   const positions = ['Chef', 'Waiter', 'Waitress', 'Cashier'];
   const gender = ['Male', 'Female', 'Other'];
@@ -39,7 +38,6 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      setServerError(null);
       console.log(`Submitting update for employee ID: ${employee._id}`);
       const url = `/api/employee/editEmployee/${employee._id}`;
       console.log(`PUT request URL: ${url}`);
@@ -48,15 +46,12 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
       onClose();
     } catch (error) {
       console.error('Error updating employee:', error);
-      if (error.response && error.response.data && error.response.data.message) {
-        setServerError(error.response.data.message);
-      } else {
-        setError('Error updating employee');
-      }
+      setError('Error updating employee');
     } finally {
       setIsLoading(false);
     }
-  };
+};
+
 
   const handleCancel = () => {
     setEmployee({ ...selectedEmployee });
@@ -81,6 +76,7 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
           )}
         </div>
         <div className="p-5 bg-white h-96 overflow-y-auto border border-gray-300 mt-3">
+          {error && <div className="text-red-500">{error}</div>}
           <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -230,7 +226,7 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
             <div>
               <label className="block text-sm font-medium text-gray-700">Start Date</label>
               <input
-                type="date"
+                type="text"
                 name="startDate"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                 value={employee.startDate}
@@ -238,8 +234,6 @@ const ViewEmployee = ({ selectedEmployee, onClose, onConfirmDelete }) => {
                 readOnly={!isEditable}
               />
             </div>
-            {serverError && <div className="text-red-500 text-center font-semibold mt-2">{serverError}</div>}
-
             {isEditable && (
               <div className="flex flex-col">
                 <div className="flex justify-end">

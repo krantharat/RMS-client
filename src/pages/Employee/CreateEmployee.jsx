@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { IoMdCloseCircle } from "react-icons/io";
 import { axiosInstance } from "../../lib/axiosInstance";
 
@@ -18,27 +18,8 @@ const CreateEmployee = ({ onClose }) => {
     startDate: ''
   });
 
-  const [errors, setErrors] = useState({});
-  const [serverError, setServerError] = useState(null);
-
   const positions = ['Chef', 'Waiter', 'Waitress', 'Cashier'];
   const gender = ['Male', 'Female', 'Other'];
-
-  useEffect(() => {
-    const fetchNextEmployeeID = async () => {
-      try {
-        const response = await axiosInstance.get('/api/employee/nextEmployeeID');
-        setFormData((prevFormData) => ({
-          ...prevFormData,
-          employeeID: response.data.nextEmployeeID
-        }));
-      } catch (error) {
-        console.error('Error fetching next employee ID:', error);
-      }
-    };
-
-    fetchNextEmployeeID();
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,40 +29,13 @@ const CreateEmployee = ({ onClose }) => {
     });
   };
 
-  const validate = () => {
-    const errors = {};
-    if (!formData.firstName) errors.firstName = "First name is required";
-    if (!formData.lastName) errors.lastName = "Last name is required";
-    if (!formData.nickName) errors.nickName = "Nickname is required";
-    if (!formData.dateOfBirth) errors.dateOfBirth = "Date of birth is required";
-    if (!formData.gender) errors.gender = "Gender is required";
-    if (!formData.identificationNumber) errors.identificationNumber = "Identification number is required";
-    if (!formData.location) errors.location = "Location is required";
-    if (!formData.email) errors.email = "Email is required";
-    if (!formData.phone) errors.phone = "Phone is required";
-    if (!formData.startDate) errors.startDate = "Start date is required";
-    return errors;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-
     try {
-      setServerError(null);
       await axiosInstance.post('/api/employee/createEmployee', formData);
       onClose();
     } catch (error) {
-      if (error.response && error.response.data && error.response.data.message) {
-        setServerError(error.response.data.message);
-      } else {
-        console.error('Error creating employee:', error);
-      }
+      console.error('Error creating employee:', error);
     }
   };
 
@@ -96,7 +50,6 @@ const CreateEmployee = ({ onClose }) => {
           <h3 className="text-2xl font-bold">Create New Profile</h3>
         </div>
         <div className="p-5 bg-white h-96 overflow-y-auto border border-gray-300 mt-3">
-          
           <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -106,7 +59,7 @@ const CreateEmployee = ({ onClose }) => {
                   name="employeeID"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   value={formData.employeeID}
-                  readOnly
+                  onChange={handleChange}
                 />
               </div>
               <div>
@@ -123,7 +76,6 @@ const CreateEmployee = ({ onClose }) => {
                     </option>
                   ))}
                 </select>
-                {errors.position && <div className="mt-1 text-red-500 text-sm">{errors.position}</div>}
               </div>
             </div>
 
@@ -137,7 +89,6 @@ const CreateEmployee = ({ onClose }) => {
                   value={formData.firstName}
                   onChange={handleChange}
                 />
-                {errors.firstName && <div className="mt-1 text-red-500 text-sm">{errors.firstName}</div>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Last Name</label>
@@ -148,7 +99,6 @@ const CreateEmployee = ({ onClose }) => {
                   value={formData.lastName}
                   onChange={handleChange}
                 />
-                {errors.lastName && <div className="mt-1 text-red-500 text-sm">{errors.lastName}</div>}
               </div>
             </div>
 
@@ -162,7 +112,6 @@ const CreateEmployee = ({ onClose }) => {
                   value={formData.nickName}
                   onChange={handleChange}
                 />
-                {errors.nickName && <div className="mt-1 text-red-500 text-sm">{errors.nickName}</div>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
@@ -173,7 +122,6 @@ const CreateEmployee = ({ onClose }) => {
                   value={formData.dateOfBirth}
                   onChange={handleChange}
                 />
-                {errors.dateOfBirth && <div className="mt-1 text-red-500 text-sm">{errors.dateOfBirth}</div>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Gender</label>
@@ -189,7 +137,6 @@ const CreateEmployee = ({ onClose }) => {
                     </option>
                   ))}
                 </select>
-                {errors.gender && <div className="mt-1 text-red-500 text-sm">{errors.gender}</div>}
               </div>
             </div>
 
@@ -203,7 +150,6 @@ const CreateEmployee = ({ onClose }) => {
                   value={formData.identificationNumber}
                   onChange={handleChange}
                 />
-                {errors.identificationNumber && <div className="mt-1 text-red-500 text-sm">{errors.identificationNumber}</div>}
               </div>
             </div>
 
@@ -216,7 +162,6 @@ const CreateEmployee = ({ onClose }) => {
                 value={formData.location}
                 onChange={handleChange}
               />
-              {errors.location && <div className="mt-1 text-red-500 text-sm">{errors.location}</div>}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -229,7 +174,6 @@ const CreateEmployee = ({ onClose }) => {
                   value={formData.email}
                   onChange={handleChange}
                 />
-                {errors.email && <div className="mt-1 text-red-500 text-sm">{errors.email}</div>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Phone</label>
@@ -240,7 +184,6 @@ const CreateEmployee = ({ onClose }) => {
                   value={formData.phone}
                   onChange={handleChange}
                 />
-                {errors.phone && <div className="mt-1 text-red-500 text-sm">{errors.phone}</div>}
               </div>
             </div>
 
@@ -253,9 +196,7 @@ const CreateEmployee = ({ onClose }) => {
                 value={formData.startDate}
                 onChange={handleChange}
               />
-              {errors.startDate && <div className="mt-1 text-red-500 text-sm">{errors.startDate}</div>}
             </div>
-            {serverError && <div className="text-red-500 text-center font-semibold mt-2">{serverError}</div>}
 
             <div className="flex flex-col">
               <div className='flex justify-center mt-2'>
