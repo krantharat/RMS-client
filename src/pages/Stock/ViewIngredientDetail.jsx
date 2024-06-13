@@ -24,13 +24,6 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
     fetchIngredientDetail();
   }, [selectedIngredient]);
 
-  const uomType = ['g', 'kg', 'ml', 'l', 'pack'];
-  const ingredientCategory = ['meat', 'seafood', 'fruit', 'vegetable'];
-
-  useEffect(() => {
-    setIngredient({ ...selectedIngredient });
-  }, [selectedIngredient]);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setIngredient(prevState => ({
