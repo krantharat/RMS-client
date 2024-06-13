@@ -11,8 +11,6 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
   const [ingredient, setIngredient] = useState({ ...selectedIngredient });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [errors, setErrors] = useState({});
-  const [ingredients, setIngredients] = useState([]);
 
   useEffect(() => {
     const fetchIngredientDetail = async () => {
@@ -23,18 +21,7 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
         console.error('Error fetching ingredient details:', err);
       }
     };
-
-    const fetchAllIngredients = async () => {
-      try {
-        const response = await axiosInstance.get("/api/stock/allIngredient");
-        setIngredients(response.data);
-      } catch (error) {
-        console.error("Error getting ingredients:", error);
-      }
-    };
-
     fetchIngredientDetail();
-    fetchAllIngredients();
   }, [selectedIngredient]);
 
   const uomType = ['g', 'kg', 'ml', 'l', 'pack'];
@@ -61,31 +48,16 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
     setIsDelete(true);
   };
 
-  const validate = () => {
-    const validationErrors = {};
-    if (ingredient.ingredientName.trim() === '') {
-      validationErrors.ingredientName = 'Ingredient name is required';
-    } else if (ingredient.ingredientName.trim() !== selectedIngredient.ingredientName && ingredients.some(i => i.ingredientName === ingredient.ingredientName.trim())) {
-      validationErrors.ingredientName = 'Already have this ingredient in stock';
-    }
-    return validationErrors;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      setLoading(false); 
-      return;
-    }
+    setError('');
     try {
       await axiosInstance.put(`/api/stock/editIngredient/${ingredient._id}`, ingredient);
       setIsEditable(false);
       onClose();
     } catch (error) {
-      setError('Error updating ingredient');
+      setError('Error updating ingredient. Please try again.');
       console.error('Error updating ingredient:', error);
     } finally {
       setLoading(false);
@@ -170,7 +142,6 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
                 readOnly={!isEditable}
               />
             </div>
-            {errors.ingredientName && <div className="text-red-500 font-medium text-center mt-1 mb-2">{errors.ingredientName}</div>}
 
             {isEditable && (
               <div className="flex flex-col">
