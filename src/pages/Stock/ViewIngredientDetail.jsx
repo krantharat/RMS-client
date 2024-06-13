@@ -37,6 +37,13 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
     fetchAllIngredients();
   }, [selectedIngredient]);
 
+  const uomType = ['g', 'kg', 'ml', 'l', 'pack'];
+  const ingredientCategory = ['meat', 'seafood', 'fruit', 'vegetable'];
+
+  useEffect(() => {
+    setIngredient({ ...selectedIngredient });
+  }, [selectedIngredient]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setIngredient(prevState => ({
@@ -44,6 +51,7 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
       [name]: value
     }));
   };
+
 
   const handleEditClick = () => {
     setIsEditable(true);
@@ -143,7 +151,7 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
             <div>
               <label className="block text-sm font-medium text-gray-700">Cost</label>
               <input
-                type="text"
+                type="number"
                 name="cost"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                 value={ingredient.cost}

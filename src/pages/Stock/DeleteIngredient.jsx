@@ -17,22 +17,32 @@ const DeleteIngredient = ({ selectedIngredient, onClose, onConfirm }) => {
     fetchIngredientDetail();
   }, [selectedIngredient]);
 
-  const handleConfirm = () => {
-    onConfirm();
-    onClose();
+  const uomType = ['g', 'kg', 'ml', 'l', 'pack'];
+  const ingredientCategory = ['meat', 'seafood', 'fruit', 'vegetable'];
+
+  useEffect(() => {
+    setIngredient({ ...selectedIngredient });
+  }, [selectedIngredient]);
+
+  const handleConfirm = async () => {
+    try {
+      const url = `/api/stock/deleteIngredient/${ingredient._id}`;
+      await axiosInstance.delete(url);
+      console.log(`DEL request URL: ${url}`);
+      onConfirm();
+      onClose();
+    } catch (error) {
+      console.error('Error deleting ingredient:', error);
+    }
   };
 
   const handleCancel = () => {
+    setIngredient({ ...selectedIngredient });
     onClose();
-  };
-
-  const closeModal = () => {
-    onClose();
-    window.location.href = '/Stock';
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="relative bg-white p-5 border-gray-200 rounded-2xl shadow-sm w-11/12 md:w-6/12 lg:w-6/12 h-auto">
         <div className="flex justify-center items-center">
           <h3 className="text-2xl font-bold">Are you sure you want to delete this ingredient?</h3>
@@ -112,7 +122,7 @@ const DeleteIngredient = ({ selectedIngredient, onClose, onConfirm }) => {
         </div>
         <button
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition duration-300"
-          onClick={closeModal}
+          onClick={onClose}
         >
           <IoMdCloseCircle className="size-7 text-red-500 cursor-pointer hover:text-red-700 transition duration-300 mr-1.5 mt-1" />
         </button>

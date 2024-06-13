@@ -50,7 +50,6 @@ const CreateIngredient = ({ onClose }) => {
         date: formData.date || new Date().toISOString().split('T')[0],
         inStock: formData.inStock || 0,
       };
-
       await axiosInstance.post('/api/stock/createIngredient', payload);
       onClose();
     } catch (error) {
