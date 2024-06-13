@@ -11,17 +11,14 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
   const [ingredient, setIngredient] = useState({ ...selectedIngredient });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
+  const [ingredients, setIngredients] = useState([]);
+
+  const uomType = ['g', 'kg', 'ml', 'l', 'pack'];
+  const ingredientCategory = ['meat', 'seafood', 'fruit', 'vegetable'];
 
   useEffect(() => {
-    const fetchIngredientDetail = async () => {
-      try {
-        const response = await axiosInstance.get(`/api/stock/searchIngredient?name=${selectedIngredient.ingredientName}`);
-        setIngredient(response.data);
-      } catch (err) {
-        console.error('Error fetching ingredient details:', err);
-      }
-    };
-    fetchIngredientDetail();
+    setIngredient({ ...selectedIngredient });
   }, [selectedIngredient]);
 
   const handleChange = (e) => {
@@ -32,7 +29,6 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
     }));
   };
 
-
   const handleEditClick = () => {
     setIsEditable(true);
   };
@@ -41,14 +37,32 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
     setIsDelete(true);
   };
 
+  const validate = () => {
+    const validationErrors = {};
+    if (ingredient.ingredientName.trim() === '') {
+      validationErrors.ingredientName = 'Ingredient name is required';
+    } else if (ingredient.ingredientName.trim() !== selectedIngredient.ingredientName && ingredients.some(i => i.ingredientName === ingredient.ingredientName.trim())) {
+      validationErrors.ingredientName = 'Already have this ingredient in stock';
+    }
+    return validationErrors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setLoading(false); 
+      return;
+    }
+
     try {
       await axiosInstance.put(`/api/stock/editIngredient/${ingredient._id}`, ingredient);
       setIsEditable(false);
-      onClose();
+      // onClose();
     } catch (error) {
       setError('Error updating ingredient. Please try again.');
       console.error('Error updating ingredient:', error);
@@ -95,23 +109,37 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Category</label>
-              <input
-                type="text"
+              <select
                 name="ingredientCategory"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                 value={ingredient.ingredientCategory}
-                readOnly
-              />
+                onChange={handleChange}
+                disabled={!isEditable}
+              >
+                <option value="" disabled>Select a category</option>
+                {ingredientCategory.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Unit of Measure</label>
-              <input
-                type="text"
+              <select
                 name="uomType"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                 value={ingredient.uomType}
-                readOnly
-              />
+                onChange={handleChange}
+                disabled={!isEditable}
+              >
+                <option value="" disabled>Select a unit of measure</option>
+                {uomType.map((uom) => (
+                  <option key={uom} value={uom}>
+                    {uom}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Cost</label>
@@ -135,6 +163,7 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
                 readOnly={!isEditable}
               />
             </div>
+            {errors.ingredientName && <div className="text-red-500 font-medium text-center mt-1 mb-2">{errors.ingredientName}</div>}
 
             {isEditable && (
               <div className="flex flex-col">

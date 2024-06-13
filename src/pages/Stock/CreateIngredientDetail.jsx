@@ -13,6 +13,8 @@ const CreateIngredient = ({ onClose }) => {
     notiAmount: ''
   });
 
+  const [errors, setErrors] = useState({});
+
   const uomType = ['g', 'kg', 'ml', 'l', 'pack'];
   const ingredientCategory = ['meat', 'seafood', 'fruit', 'vegetable'];
 
@@ -24,10 +26,25 @@ const CreateIngredient = ({ onClose }) => {
     });
   };
 
+  const validate = () => {
+    const errors = {};
+    if (!formData.ingredientName) errors.ingredientName = "Ingredient name is required";
+    if (!formData.ingredientCategory) errors.ingredientCategory = "Category is required";
+    if (!formData.uomType) errors.uomType = "Unit of Measure is required";
+    if (!formData.cost) errors.cost = "Cost is required";
+    if (!formData.notiAmount) errors.notiAmount = "Low amount notification is required";
+    return errors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
     try {
-      // Ensure correct default values before sending
       const payload = {
         ...formData,
         date: formData.date || new Date().toISOString().split('T')[0],
@@ -37,6 +54,7 @@ const CreateIngredient = ({ onClose }) => {
       onClose();
     } catch (error) {
       console.error('Error creating ingredient:', error);
+      setErrors({ submit: error.response?.data?.message || 'Error creating ingredient. Please try again.' });
     }
   };
 
@@ -61,6 +79,7 @@ const CreateIngredient = ({ onClose }) => {
                 value={formData.ingredientName}
                 onChange={handleChange}
               />
+              {errors.ingredientName && <div className="text-red-500 mt-1">{errors.ingredientName}</div>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Category</label>
@@ -77,6 +96,7 @@ const CreateIngredient = ({ onClose }) => {
                   </option>
                 ))}
               </select>
+              {errors.ingredientCategory && <div className="text-red-500 mt-1">{errors.ingredientCategory}</div>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Unit of Measure</label>
@@ -93,6 +113,7 @@ const CreateIngredient = ({ onClose }) => {
                   </option>
                 ))}
               </select>
+              {errors.uomType && <div className="text-red-500 mt-1">{errors.uomType}</div>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Cost</label>
@@ -103,6 +124,7 @@ const CreateIngredient = ({ onClose }) => {
                 value={formData.cost}
                 onChange={handleChange}
               />
+              {errors.cost && <div className="text-red-500 mt-1">{errors.cost}</div>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Low Amount of Ingredients</label>
@@ -113,6 +135,7 @@ const CreateIngredient = ({ onClose }) => {
                 value={formData.notiAmount}
                 onChange={handleChange}
               />
+              {errors.notiAmount && <div className="text-red-500 mt-1">{errors.notiAmount}</div>}
             </div>
 
             <div className="flex flex-col">

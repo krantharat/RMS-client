@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../components/header";
-import { FaEdit } from "react-icons/fa";
 import { axiosInstance } from "../../lib/axiosInstance";
-import { format } from 'date-fns';
 import CreateIngredient from "./CreateIngredientDetail";
 import ViewIngredientDetail from "./ViewIngredientDetail";
+import UpdateIngredient from "./UpdateIngredient";
 
 function AllStock() {
   const [ingredients, setIngredients] = useState([]);
@@ -39,15 +38,13 @@ function AllStock() {
   const closeModal = () => {
     setSelectedIngredient(null);
     setCreateIngredient(false);
+    setIsUpdateMode(false);
   };
 
   const handleDeleteIngredient = async () => {
     try {
       await axiosInstance.delete(`/api/stock/deleteIngredient/${selectedIngredient._id}`);
-      console.log("Ingredient deleted:", selectedIngredient);
-      setIngredients(
-        ingredients.filter((ingredient) => ingredient._id !== selectedIngredient._id)
-      );
+      setIngredients(ingredients.filter((ingredient) => ingredient._id !== selectedIngredient._id));
       setSelectedIngredient(null);
     } catch (error) {
       console.error("Error deleting ingredient:", error);
@@ -71,15 +68,19 @@ function AllStock() {
   const handleUpdateClick = () => {
     if (isUpdateMode) {
       updateIngredientQuantities();
+    } else {
+      setIsUpdateMode(true);
     }
-    setIsUpdateMode(!isUpdateMode);
   };
 
-  const handleQuantityChange = (ingredient, quantity) => {
-    setUpdateQuantities({
-      ...updateQuantities,
-      [ingredient._id]: quantity,
-    });
+  const handleQuantityChange = (id, value) => {
+    const numericValue = parseInt(value, 10);
+    if (numericValue >= 0) {
+      setUpdateQuantities((prevState) => ({
+        ...prevState,
+        [id]: numericValue,
+      }));
+    }
   };
 
   const updateIngredientQuantities = async () => {
@@ -113,7 +114,7 @@ function AllStock() {
   };
 
   const filteredIngredients = ingredients.filter((ingredient) =>
-    ingredient.ingredientName.toLowerCase().startsWith(searchTerm.toLowerCase())
+    ingredient.ingredientName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -190,6 +191,17 @@ function AllStock() {
       )}
 
       {createIngredient && <CreateIngredient onClose={closeModal} />}
+
+      {isUpdateMode && (
+        <UpdateIngredient
+          isOpen={isUpdateMode}
+          onClose={closeModal}
+          selectedIngredients={selectedIngredients}
+          onQuantityChange={handleQuantityChange}
+          updateQuantities={updateQuantities}
+          handleUpdateClick={updateIngredientQuantities}
+        />
+      )}
     </>
   );
 }
@@ -265,9 +277,10 @@ const IngredientRow = ({
         {isUpdateMode ? (
           <input
             type="number"
+            min={0}
             className="w-20 ml-2 border text-center border-gray-300 rounded"
             value={updateQuantities[_id] || inStock}
-            onChange={(e) => onQuantityChange(ingredient, e.target.value)}
+            onChange={(e) => onQuantityChange(_id, e.target.value)}
           />
         ) : (
           inStock
