@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { IoMdCloseCircle } from "react-icons/io";
 import { axiosInstance } from "../../lib/axiosInstance";
@@ -63,26 +64,18 @@ const CreateBill = ({ onClose, onSave }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      onClose();
       await axiosInstance.post('/api/summary/addBill', {
         billNumber,
         date: currentDate,
         totalCosteEachBill: calculateTotalCost(),
         totalAmount: calculateTotalAmount(),
         menuitem: billItems.map(item => ({
-          menu: item._id, // ใช้ _id แทน id
+          menu: item._id,
           qty: item.qty
         }))
       });
-
-      onSave({
-        billNumber,
-        date: currentDate,
-        totalCost: calculateTotalCost(),
-        totalAmount: calculateTotalAmount(),
-      });
-
-      billCounter += 1;
-      onClose();
+  
     } catch (error) {
       console.error('Error creating bill:', error);
     }
