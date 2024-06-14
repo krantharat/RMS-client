@@ -9,7 +9,9 @@ const ViewMenu = ({ selectedMenu, onClose, onConfirmDelete }) => {
   const [isDelete, setIsDelete] = useState(false);
   const [menu, setMenu] = useState({ ...selectedMenu });
 
-  const menuCategory = ['appetizer','main dish', 'soup', 'salad', 'drinks', 'dessert']
+  const [serverError, setServerError] = useState(null);
+
+  const menuCategory = ['appetizer', 'main dish', 'soup', 'salad', 'drinks', 'dessert']
 
   useEffect(() => {
     setMenu({ ...selectedMenu });
@@ -31,11 +33,10 @@ const ViewMenu = ({ selectedMenu, onClose, onConfirmDelete }) => {
     setIsDelete(true);
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
+      setServerError(null);
       const url = `/api/menu/editMenu/${menu._id}`;
       console.log(`PUT request URL: ${url}`);
       await axiosInstance.put(url, menu);
@@ -43,8 +44,13 @@ const ViewMenu = ({ selectedMenu, onClose, onConfirmDelete }) => {
       onClose();
     } catch (error) {
       console.error('Error updating menu:', error);
-    } 
-};
+      if (error.response && error.response.data && error.response.data.message) {
+        setServerError(error.response.data.message);
+      } else {
+        setServerError('Error updating menu');
+      }
+    }
+  };
 
   const handleCancel = () => {
     setMenu({ ...selectedMenu });
@@ -158,6 +164,8 @@ const ViewMenu = ({ selectedMenu, onClose, onConfirmDelete }) => {
                 </div>
               </div>
             </div>
+
+            {serverError && <div className="text-red-500 text-center font-semibold">{serverError}</div>}
 
             {isEditable && (
               <div className="flex flex-col">

@@ -14,6 +14,7 @@ const CreateIngredient = ({ onClose }) => {
   });
 
   const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState(null);
 
   const uomType = ['g', 'kg', 'ml', 'l', 'pack'];
   const ingredientCategory = ['meat', 'seafood', 'fruit', 'vegetable'];
@@ -38,6 +39,7 @@ const CreateIngredient = ({ onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -45,6 +47,7 @@ const CreateIngredient = ({ onClose }) => {
     }
 
     try {
+      setServerError(null); // รีเซ็ตข้อผิดพลาดก่อนที่จะส่งคำขอใหม่
       const payload = {
         ...formData,
         date: formData.date || new Date().toISOString().split('T')[0],
@@ -54,7 +57,11 @@ const CreateIngredient = ({ onClose }) => {
       onClose();
     } catch (error) {
       console.error('Error creating ingredient:', error);
-      setErrors({ submit: error.response?.data?.message || 'Error creating ingredient. Please try again.' });
+      if (error.response && error.response.data && error.response.data.message) {
+        setServerError(error.response.data.message); // ตั้งค่าข้อผิดพลาดจากเซิร์ฟเวอร์
+      } else {
+        setServerError('Error creating ingredient. Please try again.'); // ตั้งค่าข้อผิดพลาดทั่วไป
+      }
     }
   };
 
@@ -137,6 +144,8 @@ const CreateIngredient = ({ onClose }) => {
               />
               {errors.notiAmount && <div className="text-red-500 mt-1">{errors.notiAmount}</div>}
             </div>
+
+            {serverError && <div className="text-red-500 text-center font-semibold mt-2">{serverError}</div>}
 
             <div className="flex flex-col">
               <div className='flex justify-center mt-2'>

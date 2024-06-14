@@ -17,6 +17,8 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
   const uomType = ['g', 'kg', 'ml', 'l', 'pack'];
   const ingredientCategory = ['meat', 'seafood', 'fruit', 'vegetable'];
 
+  const [serverError, setServerError] = useState(null);
+
   useEffect(() => {
     setIngredient({ ...selectedIngredient });
   }, [selectedIngredient]);
@@ -41,8 +43,6 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
     const validationErrors = {};
     if (ingredient.ingredientName.trim() === '') {
       validationErrors.ingredientName = 'Ingredient name is required';
-    } else if (ingredient.ingredientName.trim() !== selectedIngredient.ingredientName && ingredients.some(i => i.ingredientName === ingredient.ingredientName.trim())) {
-      validationErrors.ingredientName = 'Already have this ingredient in stock';
     }
     return validationErrors;
   };
@@ -60,11 +60,16 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
     }
 
     try {
+      setServerError(null);
       await axiosInstance.put(`/api/stock/editIngredient/${ingredient._id}`, ingredient);
       setIsEditable(false);
       // onClose();
     } catch (error) {
-      setError('Error updating ingredient. Please try again.');
+      if (error.response && error.response.data && error.response.data.message) {
+        setServerError(error.response.data.message); // ตั้งค่าข้อผิดพลาดจากเซิร์ฟเวอร์
+      } else {
+        setServerError('Error updating ingredient. Please try again.');
+      }
       console.error('Error updating ingredient:', error);
     } finally {
       setLoading(false);
@@ -95,7 +100,6 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
         </div>
         <div className="p-5 bg-white h-96 overflow-y-auto border border-gray-300 mt-3">
           <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit}>
-            {error && <div className="text-red-500">{error}</div>}
             <div>
               <label className="block text-sm font-medium text-gray-700">Name</label>
               <input
@@ -164,6 +168,8 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
               />
             </div>
             {errors.ingredientName && <div className="text-red-500 font-medium text-center mt-1 mb-2">{errors.ingredientName}</div>}
+            
+            {serverError && <div className="text-red-500 text-center font-semibold mt-2">{serverError}</div>}
 
             {isEditable && (
               <div className="flex flex-col">

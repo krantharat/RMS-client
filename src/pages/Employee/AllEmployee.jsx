@@ -57,7 +57,6 @@ function AllEmployee() {
       employee.lastName.toLowerCase().startsWith(searchTerm.toLowerCase())
   );
 
-
   return (
     <>
       <div className="flex flex-col w-full">
@@ -90,16 +89,16 @@ function AllEmployee() {
             {searchTerm ? (
               filteredEmployees.map((item, index) => (
                 <div key={index} className="p-5 bg-white border border-gray-200 rounded-2xl shadow-sm cursor-pointer" onClick={() => handleCardClick(item)}>
-                  <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-lg font-semibold">{item.firstName} {item.lastName}</h3>
+                  <div className="flex justify-between items-center text-xl mb-3">
+                    <h3 className="text-lg truncate font-semibold w-full">{item.firstName} {item.lastName}</h3>
                   </div>
                   <p className="text-gray-700 mb-3">{item.position}</p>
                   <div className="flex items-center mb-2">
-                    <MdEmail className="text-gray-500 mr-2" />
-                    <p className="text-gray-700">{item.email}</p>
+                    <MdEmail className="text-gray-500 mr-2 text-xl" />
+                    <p className="text-gray-700 truncate w-full">{item.email}</p>
                   </div>
                   <div className="flex items-center">
-                    <FaPhoneVolume className="text-gray-500 mr-2" />
+                    <FaPhoneVolume className="text-gray-500 mr-2 text-xl" />
                     <p className="text-gray-700">{item.phone}</p>
                   </div>
                 </div>
@@ -108,15 +107,15 @@ function AllEmployee() {
               employees.map((item, index) => (
                 <div key={index} className="p-5 bg-white border border-gray-200 rounded-2xl shadow-sm cursor-pointer" onClick={() => handleCardClick(item)}>
                   <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-lg font-semibold">{item.firstName} {item.lastName}</h3>
+                    <h3 className="text-lg truncate font-semibold w-full">{item.firstName} {item.lastName}</h3>
                   </div>
                   <p className="text-gray-700 mb-3">{item.position}</p>
                   <div className="flex items-center mb-2">
-                    <MdEmail className="text-gray-500 mr-2" />
-                    <p className="text-gray-700">{item.email}</p>
+                    <MdEmail className="text-gray-500 mr-2 text-xl" />
+                    <p className="text-gray-700 truncate w-full">{item.email}</p>
                   </div>
                   <div className="flex items-center">
-                    <FaPhoneVolume className="text-gray-500 mr-2" />
+                    <FaPhoneVolume className="text-gray-500 mr-2 text-xl" />
                     <p className="text-gray-700">{item.phone}</p>
                   </div>
                 </div>

@@ -50,6 +50,7 @@ const CreateEmployee = ({ onClose }) => {
 
   const validate = () => {
     const errors = {};
+    if (!formData.position) errors.position = "Position is required";
     if (!formData.firstName) errors.firstName = "First name is required";
     if (!formData.lastName) errors.lastName = "Last name is required";
     if (!formData.nickName) errors.nickName = "Nickname is required";
@@ -66,6 +67,7 @@ const CreateEmployee = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // ตรวจสอบ validation ของฟอร์ม
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -117,6 +119,7 @@ const CreateEmployee = ({ onClose }) => {
                   value={formData.position}
                   onChange={handleChange}
                 >
+                  <option value="" disabled>Select a position</option>
                   {positions.map((position) => (
                     <option key={position} value={position}>
                       {position}

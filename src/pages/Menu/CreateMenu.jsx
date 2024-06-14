@@ -12,8 +12,9 @@ const CreateMenu = ({ onClose }) => {
   });
 
   const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState(null);
 
-  const menuCategory = ['appetizer','main dish', 'soup', 'salad', 'drinks', 'dessert'];
+  const menuCategory = ['appetizer', 'main dish', 'soup', 'salad', 'drinks', 'dessert'];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,41 +27,45 @@ const CreateMenu = ({ onClose }) => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData(prevState => ({
-          ...prevState,
-          image: reader.result
-        }));
-      };
-      reader.readAsDataURL(file);
+      setFormData(prevState => ({
+        ...prevState,
+        image: file
+      }));
     }
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.menuName) newErrors.menuName = 'Menu name is required';
-    if (!formData.menuCategory) newErrors.menuCategory = 'Category is required';
-    if (!formData.price) newErrors.price = 'Price is required';
-    if (!formData.cost) newErrors.cost = 'Cost is required';
-    if (!formData.image) newErrors.image = 'Image is required';
-    return newErrors;
+  const validate = () => {
+    const errors = {};
+    if (!formData.menuName) errors.menuName = 'Menu name is required';
+    if (!formData.menuCategory) errors.menuCategory = 'Category is required';
+    if (!formData.price) errors.price = 'Price is required';
+    if (!formData.cost) errors.cost = 'Cost is required';
+    // if (!formData.image) errors.image = 'Image is required';
+    return errors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newErrors = validateForm();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-    } else {
-      try {
-        await axiosInstance.post('/api/menu/createMenu', formData);
-        onClose();
-      } catch (error) {
-        console.error('Error creating menu:', error);
+    
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    try {
+      setServerError(null);
+    
+      await axiosInstance.post('/api/menu/createMenu', formData);
+      onClose();
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.message) {
+          setServerError(error.response.data.message);
+      } else {
+          console.error('Error creating menu:', error);
       }
     }
-  };
+  }
 
   const handleCancel = () => {
     onClose();
@@ -144,11 +149,11 @@ const CreateMenu = ({ onClose }) => {
                         />
                       </label>
                   </div>
-                  
                 </div>
-                
               </div>
             </div>
+
+            {serverError && <div className="text-red-500 text-center font-semibold">{serverError}</div>}
 
             <div className="flex flex-col">
               <div className='flex justify-center'>
