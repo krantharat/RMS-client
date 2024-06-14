@@ -1,12 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { FaEdit } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
 import DeleteIngredient from './DeleteIngredient';
+import { axiosInstance } from '../../lib/axiosInstance';
 
 const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) => {
   const [isEditable, setIsEditable] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   const [ingredient, setIngredient] = useState({ ...selectedIngredient });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
+  const [ingredients, setIngredients] = useState([]);
+
+  const uomType = ['g', 'kg', 'ml', 'l', 'pack'];
+  const ingredientCategory = ['meat', 'seafood', 'fruit', 'vegetable'];
+
+  useEffect(() => {
+    setIngredient({ ...selectedIngredient });
+  }, [selectedIngredient]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,10 +37,38 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
     setIsDelete(true);
   };
 
-  const handleSubmit = (e) => {
+  const validate = () => {
+    const validationErrors = {};
+    if (ingredient.ingredientName.trim() === '') {
+      validationErrors.ingredientName = 'Ingredient name is required';
+    } else if (ingredient.ingredientName.trim() !== selectedIngredient.ingredientName && ingredients.some(i => i.ingredientName === ingredient.ingredientName.trim())) {
+      validationErrors.ingredientName = 'Already have this ingredient in stock';
+    }
+    return validationErrors;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsEditable(false);
-    onClose();
+    setLoading(true);
+    setError('');
+
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setLoading(false); 
+      return;
+    }
+
+    try {
+      await axiosInstance.put(`/api/stock/editIngredient/${ingredient._id}`, ingredient);
+      setIsEditable(false);
+      // onClose();
+    } catch (error) {
+      setError('Error updating ingredient. Please try again.');
+      console.error('Error updating ingredient:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {
@@ -54,13 +95,14 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
         </div>
         <div className="p-5 bg-white h-96 overflow-y-auto border border-gray-300 mt-3">
           <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit}>
+            {error && <div className="text-red-500">{error}</div>}
             <div>
               <label className="block text-sm font-medium text-gray-700">Name</label>
               <input
                 type="text"
-                name="name"
+                name="ingredientName"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={ingredient.name}
+                value={ingredient.ingredientName}
                 onChange={handleChange}
                 readOnly={!isEditable}
               />
@@ -68,35 +110,41 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
             <div>
               <label className="block text-sm font-medium text-gray-700">Category</label>
               <select
-                name="category"
+                name="ingredientCategory"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={ingredient.category}
+                value={ingredient.ingredientCategory}
                 onChange={handleChange}
                 disabled={!isEditable}
               >
-                <option value="Meat">Meat</option>
-                <option value="Fruit">Fruit</option>
-                <option value="Seafood">Seafood</option>
+                <option value="" disabled>Select a category</option>
+                {ingredientCategory.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Unit of Measure</label>
               <select
-                name="uom"
+                name="uomType"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={ingredient.uom}
+                value={ingredient.uomType}
                 onChange={handleChange}
                 disabled={!isEditable}
               >
-                <option value="kg">kg</option>
-                <option value="l">l</option>
-                <option value="ml">ml</option>
+                <option value="" disabled>Select a unit of measure</option>
+                {uomType.map((uom) => (
+                  <option key={uom} value={uom}>
+                    {uom}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Cost</label>
               <input
-                type="text"
+                type="number"
                 name="cost"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                 value={ingredient.cost}
@@ -105,27 +153,17 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Price</label>
-              <input
-                type="text"
-                name="price"
-                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={ingredient.price}
-                onChange={handleChange}
-                readOnly={!isEditable}
-              />
-            </div>
-            <div>
               <label className="block text-sm font-medium text-gray-700">Low Amount of Ingredients</label>
               <input
                 type="text"
-                name="lowAmount"
+                name="notiAmount"
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
-                value={ingredient.lowAmount}
+                value={ingredient.notiAmount}
                 onChange={handleChange}
                 readOnly={!isEditable}
               />
             </div>
+            {errors.ingredientName && <div className="text-red-500 font-medium text-center mt-1 mb-2">{errors.ingredientName}</div>}
 
             {isEditable && (
               <div className="flex flex-col">
@@ -142,8 +180,9 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
                   <button
                     type="submit"
                     className="w-20 bg-green-500 text-white font-medium capitalize border-0 rounded-3xl ml-5 p-2 hover:bg-green-700 transition duration-300"
+                    disabled={loading}
                   >
-                    Save
+                    {loading ? 'Saving...' : 'Save'}
                   </button>
                   <button
                     type="button"
@@ -169,6 +208,12 @@ const ViewIngredientDetail = ({ selectedIngredient, onClose, onConfirmDelete }) 
       )}
     </div>
   );
+};
+
+ViewIngredientDetail.propTypes = {
+  selectedIngredient: PropTypes.object.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onConfirmDelete: PropTypes.func.isRequired,
 };
 
 export default ViewIngredientDetail;

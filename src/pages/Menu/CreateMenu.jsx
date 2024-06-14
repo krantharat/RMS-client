@@ -11,7 +11,9 @@ const CreateMenu = ({ onClose }) => {
     image: ''
   });
 
-  const menuCategory = ['appetizer','main dish', 'soup', 'salad', 'drinks', 'dessert']
+  const [errors, setErrors] = useState({});
+
+  const menuCategory = ['appetizer','main dish', 'soup', 'salad', 'drinks', 'dessert'];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,13 +37,28 @@ const CreateMenu = ({ onClose }) => {
     }
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.menuName) newErrors.menuName = 'Menu name is required';
+    if (!formData.menuCategory) newErrors.menuCategory = 'Category is required';
+    if (!formData.price) newErrors.price = 'Price is required';
+    if (!formData.cost) newErrors.cost = 'Cost is required';
+    if (!formData.image) newErrors.image = 'Image is required';
+    return newErrors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await axiosInstance.post('/api/menu/createMenu', formData);
-      onClose();
-    } catch (error) {
-      console.error('Error creating menu:', error);
+    const newErrors = validateForm();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+    } else {
+      try {
+        await axiosInstance.post('/api/menu/createMenu', formData);
+        onClose();
+      } catch (error) {
+        console.error('Error creating menu:', error);
+      }
     }
   };
 
@@ -68,6 +85,7 @@ const CreateMenu = ({ onClose }) => {
                     value={formData.menuName}
                     onChange={handleChange}
                   />
+                  {errors.menuName && <p className="text-red-500 text-xs mt-2">{errors.menuName}</p>}
                 </div>
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700">Category</label>
@@ -77,12 +95,14 @@ const CreateMenu = ({ onClose }) => {
                     value={formData.menuCategory}
                     onChange={handleChange}
                   >
-                  {menuCategory.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
+                    <option value="">Select category</option>
+                    {menuCategory.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
                   </select>
+                  {errors.menuCategory && <p className="text-red-500 text-xs mt-2">{errors.menuCategory}</p>}
                 </div>
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700">Price</label>
@@ -93,6 +113,7 @@ const CreateMenu = ({ onClose }) => {
                     value={formData.price}
                     onChange={handleChange}
                   />
+                  {errors.price && <p className="text-red-500 text-xs mt-2">{errors.price}</p>}
                 </div>
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700">Cost</label>
@@ -103,6 +124,7 @@ const CreateMenu = ({ onClose }) => {
                     value={formData.cost}
                     onChange={handleChange}
                   />
+                  {errors.cost && <p className="text-red-500 text-xs mt-2">{errors.cost}</p>}
                 </div>
               </div>
               <div className="mb-4 flex justify-center items-center">
@@ -111,18 +133,20 @@ const CreateMenu = ({ onClose }) => {
                     <img src={formData.image} alt="Menu" className="w-full h-full object-cover rounded-md" />
                   )}
                   <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-md">
-                    <label className="text-white bg-blue-500 px-4 py-2 rounded cursor-pointer hover:bg-blue-700 transition duration-300">
-                      Upload image
-                      <input
-                        type="file"
-                        name="image"
-                        className="hidden"
-                        onChange={handleImageChange}
-                        accept="image/*"
-                      />
-                    </label>
+                      <label className="text-white bg-blue-500 px-4 py-2 rounded cursor-pointer hover:bg-blue-700 transition duration-300">
+                        Upload image
+                        <input
+                          type="file"
+                          name="image"
+                          className="hidden"
+                          onChange={handleImageChange}
+                          accept="image/*"
+                        />
+                      </label>
                   </div>
+                  
                 </div>
+                
               </div>
             </div>
 

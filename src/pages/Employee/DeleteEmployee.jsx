@@ -31,7 +31,7 @@ const DeleteEmployee = ({ selectedEmployee, onClose, onConfirm }) => {
 
   const closeModal = () => {
     onClose();
-    window.location.href = '/';
+    // window.location.href = '/';
   };
 
   return (
@@ -116,13 +116,18 @@ const DeleteEmployee = ({ selectedEmployee, onClose, onConfirm }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Gender</label>
-                <input
-                  type="text"
-                  name="gender"
+                <select
+                  name="position"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                   value={employee.gender}
                   readOnly
-                />
+                >
+                  {gender.map((gender) => (
+                    <option key={gender} value={gender}>
+                      {gender}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="grid grid-cols-1">
