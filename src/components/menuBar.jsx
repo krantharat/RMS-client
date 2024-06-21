@@ -5,7 +5,7 @@ function MenuBar() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col w-56 min-w-44 h-screen bg-white text-black border-0 rounded-tr-3xl rounded-br-3xl p-6">
+    <div className="flex flex-col min-w-56 max-w-64 min-h-screen bg-white text-black border-0 rounded-tr-3xl rounded-br-3xl p-6">
       <a href="#logo.png" className="mb-3 self-center">
         <img src={"logo.png"} alt="Logo" className="w-20" />
       </a>
