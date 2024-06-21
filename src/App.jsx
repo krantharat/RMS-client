@@ -9,6 +9,9 @@ import AllMenu from './pages/Menu/AllMenu'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import AllStock from './pages/Stock/AllStock'
+
+import { storage } from './firebase';
+
 function App() {
   return (
     <Router>

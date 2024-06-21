@@ -19,8 +19,6 @@ function AllMenu() {
     }
   };
 
-  console.log(menus)
-
   useEffect(() => {
     fetchMenu();
   }, []);
@@ -40,7 +38,7 @@ function AllMenu() {
 
   const handleDeleteMenu = () => {
     console.log("Menu deleted:", selectedMenu);
-    setMenus(menus.filter(menu => menu !== selectedMenu));
+    setMenus(menus.filter(menu => menu._id !== selectedMenu._id));
     setSelectedMenu(null);
   };
 
@@ -82,13 +80,11 @@ function AllMenu() {
 
         <div className="flex flex-col p-5">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            { searchTerm ? (
-                filteredMenus.map((item, index) => (
-                  <div key={index} className="p-5 bg-white border border-gray-200 rounded-2xl shadow-sm cursor-pointer"
+            { filteredMenus.map((item, index) => (
+                <div key={index} className="p-5 bg-white border border-gray-200 rounded-2xl shadow-sm cursor-pointer"
                   onClick={()=> handleCardClick(item)}>
                   <div>
-                    {console.log(item.imageUrl)}
-                    <img src={item.imageUrl} alt={item.menuName} className="w-full h-60 object-cover rounded-lg mb-3" />
+                    <img src={item.image} alt={item.menuName} className="w-full h-60 object-cover rounded-lg mb-3" />
                   </div>
                   
                   <div className="flex justify-between items-center mb-3">
@@ -96,25 +92,8 @@ function AllMenu() {
                   </div>
                   <p className='flex flex-row text-black'>Priced at <span className="font-medium text-green-500 ml-3">{item.price} THB</span></p>
                 </div>
-                ))
-              )
-              : (
-                menus.map ((item, index) => (
-                  <div key={index} className="p-5 bg-white border border-gray-200 rounded-2xl shadow-sm cursor-pointer"
-                  onClick={()=> handleCardClick(item)}>
-                  <div>
-                    {console.log(item.imageUrl)}
-                    <img src={item.imageUrl} alt={item.menuName} className="w-full h-60 object-cover rounded-lg mb-3" />
-                  </div>
-                  
-                  <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-lg font-semibold">{item.menuName}</h3>
-                  </div>
-                  <p className='flex flex-row text-black'>Priced at <span className="font-medium text-green-500 ml-3">{item.price} THB</span></p>
-                  </div>
-                ))
-              )
-              }
+              ))
+            }
           </div>
         </div>
 

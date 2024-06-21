@@ -69,7 +69,7 @@ const ViewMenu = ({ selectedMenu, onClose, onConfirmDelete }) => {
       reader.onloadend = () => {
         setMenu(prevState => ({
           ...prevState,
-          file: reader.result
+          image: reader.result
         }));
       };
       reader.readAsDataURL(file);
@@ -106,7 +106,7 @@ const ViewMenu = ({ selectedMenu, onClose, onConfirmDelete }) => {
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700">Category</label>
                   <select
-                    name="category"
+                    name="menuCategory"
                     className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 ring-neutral-300"
                     value={menu.menuCategory}
                     onChange={handleChange}
@@ -144,8 +144,8 @@ const ViewMenu = ({ selectedMenu, onClose, onConfirmDelete }) => {
               </div>
               <div className="mb-4 flex justify-center items-center">
                 <div className="relative max-h-96 w-full h-80 flex items-center justify-center">
-                  {menu.file && (
-                    <img src={menu.file} alt="Menu" className="w-full h-full object-cover rounded-md" />
+                  {menu.image && (
+                    <img src={menu.image} alt="Menu" className="w-full h-full object-cover rounded-md" />
                   )}
                   {isEditable && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-md">

@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import { IoMdCloseCircle } from "react-icons/io";
 import { axiosInstance } from "../../lib/axiosInstance";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { storage } from "../../firebase";
 
 const CreateMenu = ({ onClose }) => {
   const [formData, setFormData] = useState({
     menuName: '',
     menuCategory: '',
     price: '',
-    cost: '',
-    image: ''
+    cost: ''
   });
 
+  const [image, setImage] = useState(null);
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   const menuCategory = ['appetizer', 'main dish', 'soup', 'salad', 'drinks', 'dessert'];
 
@@ -27,10 +30,7 @@ const CreateMenu = ({ onClose }) => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData(prevState => ({
-        ...prevState,
-        image: file
-      }));
+      setImage(file);
     }
   };
 
@@ -40,7 +40,7 @@ const CreateMenu = ({ onClose }) => {
     if (!formData.menuCategory) errors.menuCategory = 'Category is required';
     if (!formData.price) errors.price = 'Price is required';
     if (!formData.cost) errors.cost = 'Cost is required';
-    // if (!formData.image) errors.image = 'Image is required';
+    if (!image) errors.image = 'Image is required';
     return errors;
   };
 
@@ -53,16 +53,43 @@ const CreateMenu = ({ onClose }) => {
       return;
     }
 
+    if (uploading) {
+      setServerError('Image is still uploading. Please wait.');
+      return;
+    }
+
     try {
       setServerError(null);
-    
-      await axiosInstance.post('/api/menu/createMenu', formData);
-      onClose();
+      setUploading(true);
+
+      const imageName = new Date().getTime() + image.name;
+      const storageRef = ref(storage, imageName);
+      const uploadTask = uploadBytesResumable(storageRef, image);
+
+      uploadTask.on(
+        "state_changed",
+        snapshot => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+        },
+        error => {
+          console.error("Error uploading file:", error);
+          setUploading(false);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          const menuData = { ...formData, image: downloadURL };
+          await axiosInstance.post('/api/menu/createMenu', menuData);
+          setUploading(false);
+          onClose();
+        }
+      );
     } catch (error) {
+      setUploading(false);
       if (error.response && error.response.data && error.response.data.message) {
-          setServerError(error.response.data.message);
+        setServerError(error.response.data.message);
       } else {
-          console.error('Error creating menu:', error);
+        console.error('Error creating menu:', error);
       }
     }
   }
@@ -134,20 +161,20 @@ const CreateMenu = ({ onClose }) => {
               </div>
               <div className="mb-4 flex justify-center items-center">
                 <div className="relative max-h-96 w-full h-80 flex items-center justify-center">
-                  {formData.image && (
-                    <img src={formData.image} alt="Menu" className="w-full h-full object-cover rounded-md" />
+                  {image && (
+                    <img src={URL.createObjectURL(image)} alt="Menu" className="w-full h-full object-cover rounded-md" />
                   )}
                   <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-md">
-                      <label className="text-white bg-blue-500 px-4 py-2 rounded cursor-pointer hover:bg-blue-700 transition duration-300">
-                        Upload image
-                        <input
-                          type="file"
-                          name="image"
-                          className="hidden"
-                          onChange={handleImageChange}
-                          accept="image/*"
-                        />
-                      </label>
+                    <label className="text-white bg-blue-500 px-4 py-2 rounded cursor-pointer hover:bg-blue-700 transition duration-300">
+                      Upload image
+                      <input
+                        type="file"
+                        name="image"
+                        className="hidden"
+                        onChange={handleImageChange}
+                        accept="image/*"
+                      />
+                    </label>
                   </div>
                 </div>
               </div>
